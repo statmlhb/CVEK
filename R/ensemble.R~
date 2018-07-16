@@ -1,0 +1,220 @@
+#' Estimating Ensemble Kernel Matrices
+#'
+#' Conduct gaussian process regression based on the estimated ensemble kernel
+#' matrix.
+#'
+#' There are three ensemble strategies available here:
+#'
+#' \bold{Empirical Risk Minimization}
+#'
+#' After obtaining the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}, we
+#' estimate the ensemble weights \eqn{u=\{u_d\}_{d=1}^D} such that it minimizes
+#' the overall error \deqn{\hat{u}=\underset{u \in \Delta}{argmin}\parallel
+#' \sum_{d=1}^Du_d\hat{\epsilon}_d\parallel^2 \quad where\; \Delta=\{u | u \geq
+#' 0, \parallel u \parallel_1=1\}} Then produce the final ensemble prediction:
+#' \deqn{\hat{h}=\sum_{d=1}^D \hat{u}_d h_d=\sum_{d=1}^D \hat{u}_d
+#' A_{d,\hat{\lambda}_d}y=\hat{A}y} where \eqn{\hat{A}=\sum_{d=1}^D \hat{u}_d
+#' A_{d,\hat{\lambda}_d}} is the ensemble matrix.
+#'
+#' \bold{Simple Averaging}
+#'
+#' Motivated by existing literature in omnibus kernel, we propose another way
+#' to obtain the ensemble matrix by simply choosing unsupervised weights
+#' \eqn{u_d=1/D} for \eqn{d=1,2,...D}.
+#'
+#' \bold{Exponential Weighting}
+#'
+#' Additionally, another scholar gives a new strategy to calculate weights
+#' based on the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}.
+#' \deqn{u_d(\beta)=\frac{exp(-\parallel \hat{\epsilon}_d
+#' \parallel_2^2/\beta)}{\sum_{d=1}^Dexp(-\parallel \hat{\epsilon}_d
+#' \parallel_2^2/\beta)}}
+#'
+#' Then we can calculate the outpur of gaussian process regression, the
+#' solution is given by \deqn{\hat{\beta}=[1^T(K+\lambda
+#' I)^{-1}1]^{-1}1^T(K+\lambda I)^{-1}y} \deqn{\hat{\alpha}=(K+\lambda
+#' I)^{-1}(y-\hat{\beta}1)} where \eqn{\beta=intercept}.
+#'
+#' @param formula A symbolic description of the model to be fitted.
+#' @param label_names A character string indicating all the interior variables
+#' included in each predictor.
+#' @param Kernlist The kernel library containing several kernels given by user.
+#' @param data A dataframe to be fitted.
+#' @param mode A character string indicating which tuning parameter criteria is
+#' to be used.
+#' @param strategy A character string indicating which ensemble strategy is to
+#' be used.
+#' @param beta A numeric value specifying the parameter when strategy = "exp".
+#' @param lambda A numeric string specifying the range of noise to be chosen.
+#' The lower limit of lambda must be above 0.
+#' @return \item{lam}{The selected tuning parameter based on the estimated
+#' ensemble kernel matrix.}
+#'
+#' \item{intercept}{Estimated bias of the model.}
+#'
+#' \item{alpha}{Estimated coefficients of the estimated ensemble kernel
+#' matrix.}
+#'
+#' \item{K}{Estimated ensemble kernel matrix.}
+#'
+#' \item{u_hat}{A vector of weights of the kernels in the library.}
+#' @author Wenying Deng
+#' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
+#' Nonlinear Effect with Gaus- sian Processes. October 2017.
+#'
+#' Xiang Zhan, Anna Plantinga, Ni Zhao, and Michael C. Wu. A fast small-sample
+#' kernel inde- pendence test for microbiome community-level association
+#' analysis. December 2017.
+#'
+#' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
+#' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
+#' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
+#' @examples
+#'
+#' ##ensemble(formula = Y ~ X1 + X2,
+#' ##label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
+#' ##Kernlist = Kernlist, data = data, mode = "loocv",
+#' ##strategy = "erm", beta = 1, lambda = exp(seq(-5, 5)))
+#'
+#' @export ensemble
+ensemble <-
+  function(n, D, strategy, beta, error_mat, A_hat){
+
+    # y <- data[, as.character(attr(terms(formula), "variables"))[2]]
+    #
+    # # extract the information from the given formula to construct a true formula
+    # re <- genericFormula(formula, label_names)
+    # generic_formula0 <- re[[1]]
+    # len <- re[[2]]
+    #
+    # # extract design matrix
+    # X <- model.matrix(generic_formula0, data)[, -1]
+    # n <- nrow(X)
+    #
+    # # estimation
+    # # D = 10
+    # X1 <- X[, c(1:length(label_names[[1]]))]
+    # X2 <- X[, c((length(label_names[[1]]) + 1):len)]
+    #
+    # D <- length(Kernlist)
+    # out <- baseEstimate(n, D, y, X1, X2, Kernlist, mode, lambda)
+    # A_hat <- out$A_hat
+    # error_mat <- out$error_mat
+
+    if (strategy == "erm"){
+
+      A <- error_mat
+      B <- rep(0, n)
+      E <- rep(1, D)
+      F <- 1
+      G <- diag(D)
+      H <- rep(0, D)
+      u_hat <- lsei(A, B, E = E, F = F, G = G, H = H)$X
+      A_est <- u_hat[1] * A_hat[[1]]
+      if(D != 1)
+        for(d in 2:D)
+          A_est <- A_est + u_hat[d] * A_hat[[d]]
+    }
+    else if (strategy == "average"){
+
+	  u_hat <- rep(1 / D, D)
+      A_est <- (1 / D) * A_hat[[1]]
+      if(D != 1)
+        for(d in 2:D)
+          A_est <- A_est + (1 / D) * A_hat[[d]]
+    }
+    else if (strategy == "exp"){
+
+      A <- error_mat
+      u_hat <- apply(A, 2, function(x) exp(sum(-x ^ 2 / beta)))
+      u_hat <- u_hat / sum(u_hat)
+      A_est <- u_hat[1] * A_hat[[1]]
+      if(D != 1)
+        for(d in 2:D)
+          A_est <- A_est + u_hat[d] * A_hat[[d]]
+    }
+    else
+      stop("strategy must be erm, average or exp!")
+
+    # As <- svd(A_est)
+    # K_hat <- As$u %*% diag(As$d / (1 - As$d)) %*% t(As$u)
+    #
+    # lambda0 <- tuning(y, K_hat, mode, lambda)
+    # K1 <- cbind(1, K_hat)
+    # K2 <- cbind(0, rbind(0, K_hat))
+    #
+    # theta <- ginv(lambda0 * K2 + t(K1) %*% K1) %*% t(K1) %*% y
+    # beta0 <- theta[1]
+    # alpha <- theta[-1]
+#
+#     return(list(lam = lambda0, intercept = beta0,
+#                 alpha = alpha, K = K_hat, u_hat = u_hat))
+    return(list(A_est = A_est, u_hat = u_hat))
+  }
+
+
+
+
+#' Estimating Projection Matrices
+#'
+#' Calculate the estiamted projection matrices for every kernels in the kernel
+#' library.
+#'
+#' For a given mode, this function return a list of projection matrices for
+#' every kernels in the kernel library and a size*magn matrix indicating
+#' errors.
+#'
+#' @param size A numeric number specifying the number of observations.
+#' @param magn A numeric number specifying the number of kernels in the kernel
+#' library.
+#' @param Y Reponses of the dataframe.
+#' @param X1 The first type of factor in the dataframe (could contains several
+#' subfactors).
+#' @param X2 The second type of factor in the dataframe (could contains several
+#' subfactors).
+#' @param Kernlist The kernel library containing several kernels given by user.
+#' @param mode A character string indicating which tuning parameter criteria is
+#' to be used.
+#' @param lambda A numeric string specifying the range of noise to be chosen.
+#' The lower limit of lambda must be above 0.
+#' @return \item{A_hat}{A list of projection matrices for every kernels in the
+#' kernel library.}
+#'
+#' \item{error_mat}{A size*magn matrix indicating errors.}
+#' @author Wenying Deng
+#' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
+#' Nonlinear Effect with Gaus- sian Processes. October 2017.
+#' @examples
+#'
+#' ##baseEstimate(size = 50, magn = 3, Y, X1, X2, Kernlist = NULL,
+#' ##mode = "loocv", lambda = exp(seq(-5, 5)))
+#'
+#' @export baseEstimate
+baseEstimate <- function(size, magn, Y, X1, X2, Kernlist, mode, lambda){
+
+  A_hat <- list()
+  error_mat <- matrix(0, nrow = size, ncol = magn)
+
+  for (d in seq(magn)){
+    Kern <- Kernlist[[d]]
+    K1_m <- Kern(X1, X1)
+    K2_m <- Kern(X2, X2)
+    if(tr(K1_m) > 0 & tr(K2_m) > 0){
+      K1_m <- K1_m / tr(K1_m)
+      K2_m <- K2_m / tr(K2_m)
+    }
+    K <- K1_m + K2_m
+    if (length(lambda) != 1){
+      lambda0 <- tuning(Y, K, mode, lambda)
+      K1 <- cbind(1, K)
+      K2 <- cbind(0, rbind(0, K))
+      theta <- ginv(lambda0 * K2 + t(K1) %*% K1) %*% t(K1) %*% Y
+      beta0 <- theta[1]
+      M <- K %*% ginv(K + lambda0 * diag(size))
+      error_mat[, d] <- (diag(size) - M) %*% (Y - beta0) / diag(diag(size) - M)
+      A_hat[[d]] <- M
+    }
+  }
+
+  return(list(A_hat = A_hat, error_mat = error_mat))
+}

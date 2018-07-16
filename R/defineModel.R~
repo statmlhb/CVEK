@@ -1,0 +1,28 @@
+defineModel <- function(formula, label_names, data, Kern_par){
+  
+  Y <- data[, as.character(attr(terms(formula), "variables"))[2]]
+  re <- genericFormula(formula, label_names)
+  generic_formula0 <- re$generic_formula
+  len <- re$length_main
+  
+  X <- model.matrix(generic_formula0, data)[, -1]
+  
+  n <- nrow(X)
+  Xm <- colMeans(X)
+  p <- ncol(X)
+  X <- X - rep(Xm, rep(n, p))
+  Xscale <- drop(rep(1 / n, n) %*% X ^ 2) ^ .5
+  X <- X / rep(Xscale, rep(n, p))
+  
+  X1 <- X[, c(1:length(label_names[[1]]))]
+  X2 <- X[, c((length(label_names[[1]]) + 1):len)]
+  
+  Kernlist <- NULL
+  for (d in 1:nrow(Kern_par))
+    Kernlist <- c(Kernlist, kernelGenerate(Kern_par[d, ][1], 
+                                           Kern_par[d, ][2], 
+                                           Kern_par[d, ][3], 
+                                           Kern_par[d, ][4]))
+  
+  return(list(Y = Y, X1 = X1, X2 = X2, Kernlist = Kernlist))
+}
