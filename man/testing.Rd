@@ -4,43 +4,47 @@
 \alias{testing}
 \title{Conducting Score Tests for Interaction}
 \usage{
-testing(formula_int, label_names, Y, X1, X2, Kernlist, mode = "loocv",
+testing(formula_int, label_names, Y, X1, X2, kern_list, mode = "loocv",
   strategy = "erm", beta = 1, test = "boot", lambda = exp(seq(-5, 5)),
   B = 100)
 }
 \arguments{
-\item{formula_int}{A symbolic description of the model with interaction.}
+\item{formula_int}{(formula) A symbolic description of the model with 
+interaction.}
 
-\item{label_names}{A character string indicating all the interior variables
-included in each predictor.}
+\item{label_names}{(list) A character string indicating all the interior 
+variables included in each predictor.}
 
-\item{Y}{Reponses of the dataframe.}
+\item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X1}{The first type of factor in the dataframe (could contains several
-subfactors).}
+\item{X1}{(dataframe, n*p1) The first type of factor in the dataframe (could 
+contains several subfactors).}
 
-\item{X2}{The second type of factor in the dataframe (could contains several
-subfactors).}
+\item{X2}{(dataframe, n*p2) The second type of factor in the dataframe (could 
+contains several subfactors).}
 
-\item{Kernlist}{The kernel library containing several kernels given by user.}
+\item{kern_list}{(list of length K) A list of kernel functions given by user.}
 
-\item{mode}{A character string indicating which tuning parameter criteria is
+\item{mode}{(character) A character string indicating which tuning 
+parameter criteria is to be used.}
+
+\item{strategy}{(character) A character string indicating which ensemble 
+strategy is to be used.}
+
+\item{beta}{(numeric) A numeric value specifying the parameter 
+when strategy = "exp".}
+
+\item{test}{(character) A character string indicating which test is 
 to be used.}
 
-\item{strategy}{A character string indicating which ensemble strategy is to
-be used.}
+\item{lambda}{(numeric) A numeric string specifying the range of 
+noise to be chosen. The lower limit of lambda must be above 0.}
 
-\item{beta}{A numeric value specifying the parameter when strategy = "exp".}
-
-\item{test}{A character string indicating which test is to be used.}
-
-\item{lambda}{A numeric string specifying the range of noise to be chosen.
-The lower limit of lambda must be above 0.}
-
-\item{B}{A numeric value indicating times of resampling when test = "boot".}
+\item{B}{(integer) A numeric value indicating times of resampling w
+hen test = "boot".}
 }
 \value{
-\item{pvalue}{p-value of the test.}
+\item{pvalue}{(numeric) p-value of the test.}
 }
 \description{
 Conduct score tests comparing a fitted model and a more general alternative
@@ -63,10 +67,10 @@ computational effort to a permutation test.
 \examples{
 
 
-##testing(formula_int = Y ~ X1 * X2,
-##label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
-##Y, X1, X2, Kernlist, mode = "loocv", strategy = "erm",
-##beta = 1, test = "boot", lambda = exp(seq(-5, 5)), B = 100)
+testing(formula_int = Y ~ X1 * X2,
+label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
+Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
+beta = 1, test = "boot", lambda = exp(seq(-5, 5)), B = 100)
 
 
 }
@@ -83,7 +87,7 @@ parametric bootstrap tests for gene-gene and gene-environment interactions.
 January 2011.
 }
 \seealso{
-method: \code{\link{kernelGenerate}}
+method: \code{\link{generate_kernel}}
 
 mode: \code{\link{tuning}}
 

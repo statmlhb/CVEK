@@ -1,12 +1,12 @@
-baseEstimate            Estimating Projection Matrices
-dataGenerate            Generating Original Data
-defineModel             Defining the Model
+compute_info            Computing Information Matrices
+compute_stat            Computing Score Test Statistics.
+define_model            Defining the Model
 ensemble                Estimating Ensemble Kernel Matrices
+estimate_base           Estimating Projection Matrices
+estimate_noise          Estimating Noise
 estimation              Conducting Gaussian Process Regression
-genericFormula          From Vectors to Single Variables
-infoMat                 Computing Information Matrices
-kernelGenerate          Generating A Single Kernel
-noiseEstimate           Estimating Noise
-scoreStat               Computing Score Test Statistics.
+generate_data           Generating Original Data
+generate_formula        From Vectors to Single Variables
+generate_kernel         Generating A Single Kernel
 testing                 Conducting Score Tests for Interaction
 tuning                  Calculating Tuning Parameters

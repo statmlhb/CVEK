@@ -7,18 +7,18 @@
 tuning(Y, K_mat, mode, lambda)
 }
 \arguments{
-\item{Y}{Reponses of the dataframe.}
+\item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{K_mat}{Estimated ensemble kernel matrix.}
+\item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{mode}{A character string indicating which tuning parameter criteria is
-to be used.}
+\item{mode}{(character) A character string indicating which tuning 
+parameter criteria is to be used.}
 
-\item{lambda}{A numeric string specifying the range of noise to be chosen.
-The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise 
+to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
-\item{lambda0}{The estimated tuning parameter.}
+\item{lambda0}{(numeric) The estimated tuning parameter.}
 }
 \description{
 Calculate tuning parameters based on given criteria.
@@ -54,7 +54,8 @@ y^{\star T}(I-A_\lambda)y^\star-\frac{1}{n-1}log \mid I-A_\lambda \mid
 \examples{
 
 
-##tuning(Y, K_mat = K, mode = "loocv", lambda = exp(seq(-5, 5)))
+lambda0 <- tuning(Y, K_mat = K_hat, 
+mode = "loocv", lambda = exp(seq(-5, 5)))
 
 
 }

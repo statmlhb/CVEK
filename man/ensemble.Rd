@@ -4,28 +4,30 @@
 \alias{ensemble}
 \title{Estimating Ensemble Kernel Matrices}
 \usage{
-ensemble(n, D, strategy, beta, error_mat, A_hat)
+ensemble(n, kern_size, strategy, beta, error_mat, A_hat)
 }
 \arguments{
-\item{n}{A numeric number specifying the number of observations.}
+\item{n}{(integer) A numeric number specifying the number of observations.}
 
-\item{D}{A numeric number specifying the number of kernels in the kernel
-library.}
+\item{kern_size}{(integer, =K) A numeric number specifying the number of 
+kernels in the kernel library.}
 
-\item{strategy}{A character string indicating which ensemble strategy is to
-be used.}
+\item{strategy}{(character) A character string indicating which ensemble 
+strategy is to be used.}
 
-\item{beta}{A numeric value specifying the parameter when strategy = "exp".}
+\item{beta}{(numeric) A numeric value specifying the parameter when 
+strategy = "exp".}
 
-\item{error_mat}{A n*D matrix indicating errors.}
+\item{error_mat}{(matrix, n*K) A n\*kern_size matrix indicating errors.}
 
-\item{A_hat}{A list of projection matrices for every kernels in the kernel
-library.}
+\item{A_hat}{(list of length K) A list of projection matrices for 
+every kernels in the kernel library.}
 }
 \value{
-\item{A_est}{A list of estimated kernel matrices.}
+\item{A_est}{(matrix, n*n) A list of estimated kernel matrices.}
 
-\item{u_hat}{A vector of weights of the kernels in the library.}
+\item{u_hat}{(vector of length K) A vector of weights of the kernels 
+in the library.}
 }
 \description{
 Give a list of estimated kernel matrices and their weights.
@@ -61,7 +63,8 @@ based on the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}.
 \examples{
 
 
-##ensemble(n = 50, D = 6, strategy = "erm", beta = 1, error_mat, A_hat)
+ensemble(n = 100, kern_size = 3, strategy = "erm", beta = 1, 
+error_mat, A_hat)
 
 
 }

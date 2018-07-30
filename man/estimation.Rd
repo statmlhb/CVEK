@@ -4,43 +4,45 @@
 \alias{estimation}
 \title{Conducting Gaussian Process Regression}
 \usage{
-estimation(Y, X1, X2, Kernlist, mode = "loocv", strategy = "erm",
+estimation(Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
   beta = 1, lambda = exp(seq(-5, 5)))
 }
 \arguments{
-\item{Y}{Reponses of the dataframe.}
+\item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X1}{The first type of factor in the dataframe (could contains several
-subfactors).}
+\item{X1}{(dataframe, n*p1) The first type of factor in the dataframe (could 
+contains several subfactors).}
 
-\item{X2}{The second type of factor in the dataframe (could contains several
-subfactors).}
+\item{X2}{(dataframe, n*p2) The second type of factor in the dataframe (could 
+contains several subfactors).}
 
-\item{Kernlist}{The kernel library containing several kernels given by user.}
+\item{kern_list}{(list of length K) A list of kernel functions given by user.}
 
-\item{mode}{A character string indicating which tuning parameter criteria is
-to be used.}
+\item{mode}{(character) A character string indicating which tuning 
+parameter criteria is to be used.}
 
-\item{strategy}{A character string indicating which ensemble strategy is to
-be used.}
+\item{strategy}{(character) A character string indicating which ensemble 
+strategy is to be used.}
 
-\item{beta}{A numeric value specifying the parameter when strategy = "exp".}
+\item{beta}{(numeric) A numeric value specifying the parameter 
+when strategy = "exp".}
 
-\item{lambda}{A numeric string specifying the range of noise to be chosen.
-The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of 
+noise to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
-\item{lam}{The selected tuning parameter based on the estimated
+\item{lam}{(numeric) The selected tuning parameter based on the 
+estimated ensemble kernel matrix.}
+
+\item{intercept}{(numeric) Estimated bias of the model.}
+
+\item{alpha}{(vector of length n) Estimated coefficients of the estimated 
 ensemble kernel matrix.}
 
-\item{intercept}{Estimated bias of the model.}
+\item{K}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{alpha}{Estimated coefficients of the estimated ensemble kernel
-matrix.}
-
-\item{K}{Estimated ensemble kernel matrix.}
-
-\item{u_hat}{A vector of weights of the kernels in the library.}
+\item{u_hat}{(vector of length K) A vector of weights of the kernels in 
+the library.}
 }
 \description{
 Conduct gaussian process regression based on the estimated ensemble kernel
@@ -56,8 +58,8 @@ gaussian process regression, the solution is given by
 \examples{
 
 
-##estimation(Y, X1, X2, Kernlist, mode = "loocv", strategy = "erm",
-##beta = 1, lambda = exp(seq(-5, 5)))
+estimation(Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
+beta = 1, lambda = exp(seq(-5, 5)))
 
 
 }

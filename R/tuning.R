@@ -29,13 +29,13 @@
 #' y^{\star T}(I-A_\lambda)y^\star-\frac{1}{n-1}log \mid I-A_\lambda \mid
 #' \Big\}}
 #' 
-#' @param Y Reponses of the dataframe.
-#' @param K_mat Estimated ensemble kernel matrix.
-#' @param mode A character string indicating which tuning parameter criteria is
-#' to be used.
-#' @param lambda A numeric string specifying the range of noise to be chosen.
-#' The lower limit of lambda must be above 0.
-#' @return \item{lambda0}{The estimated tuning parameter.}
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param mode  (character) A character string indicating which tuning 
+#' parameter criteria is to be used.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
 #' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
@@ -59,46 +59,76 @@
 #' @examples
 #' 
 #' 
-#' ##tuning(Y, K_mat = K, mode = "loocv", lambda = exp(seq(-5, 5)))
+#' lambda0 <- tuning(Y, K_mat = K_hat, 
+#' mode = "loocv", lambda = exp(seq(-5, 5)))
 #' 
 #' 
 #' @export tuning
+
 tuning <-
-  function(Y, K_mat, mode, lambda){
-
-    n <- nrow(K_mat)
-
-    # estimation
-    if (mode == "loocv"){
-      CV <- sapply(lambda, function(k){
-        A <- K_mat %*% ginv(K_mat + k * diag(n))
-        sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)
-      })
-    }
-    else if (mode == "AICc"){
-      CV <- sapply(lambda, function(k){
-        A <- K_mat %*% ginv(K_mat + k * diag(n))
-        log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
-          2 * (tr(A) + 2) / (n - tr(A) - 3)
-      })
-    }
-    else if (mode == "GCVc"){
-      CV <- sapply(lambda, function(k){
-        A <- K_mat %*% ginv(K_mat + k * diag(n))
-        log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
-          2 * log(max(0, 1 - tr(A) / n - 2 / n))
-      })
-    }
-    else if (mode == "gmpml"){
-      CV <- sapply(lambda, function(k){
-        A <- K_mat %*% ginv(K_mat + k * diag(n))
-        log(t(Y) %*% (diag(n) - A) %*% Y) -
-          1 / (n - 1) * log(det((diag(n) - A)))
-      })
-    }
-    else
-      stop("mode must be loocv, AICc, GCVc or gmpml!")
-
-    lambda0 <- lambda[which(CV == min(CV))]
-    return(lambda0)
+  function(Y, K_mat, mode, lambda) {
+    
+    mode <- match.arg(mode, c("AICc", "GCVc", "gmpml", "loocv"))
+    func_name <- paste0("tuning_", mode)
+    do.call(func_name, list(Y = Y, K_mat = K_mat, lambda = lambda))
   }
+
+
+tuning_AICc <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k) {
+      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
+        2 * (tr(A) + 2) / (n - tr(A) - 3)
+    })
+    lambda0 <- lambda[which(CV == min(CV))]
+    
+    lambda0
+  }
+
+
+tuning_GCVc <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k) {
+      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
+        2 * log(max(0, 1 - tr(A) / n - 2 / n))
+    })
+    lambda0 <- lambda[which(CV == min(CV))]
+    
+    lambda0
+  }
+
+
+tuning_gmpml <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k){
+      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      log(t(Y) %*% (diag(n) - A) %*% Y) -
+        1 / (n - 1) * log(det((diag(n) - A)))
+    })
+    lambda0 <- lambda[which(CV == min(CV))]
+    
+    lambda0
+  }
+
+
+tuning_loocv <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k) {
+      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)
+    })
+    lambda0 <- lambda[which(CV == min(CV))]
+    
+    lambda0
+  }
+
