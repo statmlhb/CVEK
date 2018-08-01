@@ -31,8 +31,8 @@ parameter criteria is to be used.}
 \item{strategy}{(character) A character string indicating which ensemble 
 strategy is to be used.}
 
-\item{beta}{(numeric) A numeric value specifying the parameter 
-when strategy = "exp".}
+\item{beta}{(numeric/character) A numeric value specifying the parameter 
+when strategy = "exp" \code{\link{ensemble_exp}}.}
 
 \item{test}{(character) A character string indicating which test is 
 to be used.}

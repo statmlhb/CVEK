@@ -69,6 +69,24 @@ generate_kernel <-
   }
 
 
+#' Generating A Single Point-wise Function Using Intercept
+#'
+#' Generate point-wise functions for two vectors using intercept kernel.
+#'
+#' \bold{Polynomial Kernels} \deqn{k(x, x')=(x \cdot x')^p} We have intercept
+#' kernel when \eqn{p=0}, and linear kernel when \eqn{p=1}.
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_intercept
 kernel_intercept <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p) {
@@ -78,6 +96,24 @@ kernel_intercept <-
   }
 
 
+#' Generating A Single Point-wise Function Using Linear
+#'
+#' Generate point-wise functions for two vectors using linear kernel.
+#'
+#' \bold{Polynomial Kernels} \deqn{k(x, x')=(x \cdot x')^p} We have intercept
+#' kernel when \eqn{p=0}, and linear kernel when \eqn{p=1}.
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_linear
 kernel_linear <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p) {
@@ -87,6 +123,24 @@ kernel_linear <-
   }
 
 
+#' Generating A Single Point-wise Function Using Polynomial
+#'
+#' Generate point-wise functions for two vectors using polynomial kernel.
+#'
+#' \bold{Polynomial Kernels} \deqn{k(x, x')=(x \cdot x')^p} We have intercept
+#' kernel when \eqn{p=0}, and linear kernel when \eqn{p=1}.
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_polynomial
 kernel_polynomial <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p) {
@@ -96,6 +150,23 @@ kernel_polynomial <-
   }
 
 
+#' Generating A Single Point-wise Function Using RBF
+#'
+#' Generate point-wise functions for two vectors using rbf kernel.
+#'
+#' \bold{Gaussian RBF Kernels} \deqn{k_{SE}(r)=exp\Big(-\frac{r^2}{2l^2}\Big)}
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_rbf
 kernel_rbf <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p) {
@@ -105,6 +176,25 @@ kernel_rbf <-
   }
 
 
+#' Generating A Single Point-wise Function Using Matern
+#'
+#' Generate point-wise functions for two vectors using matern kernel.
+#'
+#' \bold{Matern Kernels}
+#' \deqn{k_{Matern}(r)=\frac{2^{1-\nu}}{\Gamma(\nu)}\Big(\frac{\sqrt{2\nu
+#' r}}{l}\Big)^\nu K_\nu \Big(\frac{\sqrt{2\nu r}}{l}\Big)}
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_matern
 kernel_matern <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p){
@@ -121,6 +211,24 @@ kernel_matern <-
   }
 
 
+#' Generating A Single Point-wise Function Using Rational Quadratic
+#'
+#' Generate point-wise functions for two vectors using rational kernel.
+#'
+#' \bold{Rational Quadratic Kernels} \deqn{k_{RQ}(r)=\Big(1+\frac{r^2}{2\alpha
+#' l^2}\Big)^{-\alpha}}
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_rational
 kernel_rational <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p){
@@ -131,6 +239,26 @@ kernel_rational <-
   }
 
 
+#' Generating A Single Point-wise Function Using Neural Network
+#'
+#' Generate point-wise functions for two vectors using neural network kernel.
+#'
+#' \bold{Neural Network Kernels} \deqn{k_{NN}(x,
+#' x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T\Sigma
+#' \tilde{x}'}{\sqrt{(1+2\tilde{x}^T\Sigma \tilde{x})(1+2\tilde{x}'^T\Sigma
+#' \tilde{x}')}}\Big)}
+#'
+#' @param Sigma (matrix) The covariance matrix for neural network kernel.
+#' @param l (numeric) A numeric number indicating the hyperparameter 
+#' (flexibility) of a specific kernel.
+#' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
+#' rational, alpha = p.
+#' @return \item{point_wise}{(function) A function calculating 
+#' the relevance of two vectors.}
+#' @author Wenying Deng
+#' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
+#'
+#' @export kernel_nn
 kernel_nn <-
   function(Sigma, l, p) {
     point_wise <- function(xp, xq, Sigma, l, p){

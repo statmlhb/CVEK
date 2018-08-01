@@ -4,7 +4,7 @@
 \alias{compute_stat}
 \title{Computing Score Test Statistics.}
 \usage{
-compute_stat(n, Y, X12, beta0, sigma2_hat, tau_hat, K_gpr)
+compute_stat(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
 }
 \arguments{
 \item{n}{(integer) A numeric number specifying the number of observations.}
@@ -16,11 +16,11 @@ types of factors in the dataframe.}
 
 \item{beta0}{(numeric) Estimated bias of the model.}
 
+\item{K_gpr}{(matrix, n*n) Estimated ensemble kernel matrix.}
+
 \item{sigma2_hat}{(numeric) The estimated noise of the fixed effects.}
 
 \item{tau_hat}{(numeric) The estimated noise of the random effects.}
-
-\item{K_gpr}{(matrix, n*n) Estimated ensemble kernel matrix.}
 }
 \value{
 \item{test_stat}{(numeric) The computed test statistic.}
@@ -34,7 +34,7 @@ The test statistic is distributed as a scaled Chi-squared distribution.
 \examples{
 
 
-compute_stat(n = 100, Y, X12, beta0, sigma2_hat, tau_hat, K_gpr)
+compute_stat(n = 100, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
 
 
 }

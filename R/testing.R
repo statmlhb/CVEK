@@ -30,8 +30,8 @@
 #' parameter criteria is to be used.
 #' @param strategy (character) A character string indicating which ensemble 
 #' strategy is to be used.
-#' @param beta (numeric) A numeric value specifying the parameter 
-#' when strategy = "exp".
+#' @param beta (numeric/character) A numeric value specifying the parameter 
+#' when strategy = "exp" \code{\link{ensemble_exp}}.
 #' @param test (character) A character string indicating which test is 
 #' to be used.
 #' @param lambda (numeric) A numeric string specifying the range of 
@@ -97,11 +97,53 @@ testing <- function(formula_int, label_names, Y, X1, X2, kern_list,
 }
 
 
+
+#' Conducting Score Tests for Interaction Using Asymptotic Test
+#'
+#' Conduct score tests comparing a fitted model and a more general alternative
+#' model using asymptotic test.
+#'
+#' \bold{Asymptotic Test}
+#'
+#' This is based on the classical variance component test to construct a
+#' testing procedure for the hypothesis about Gaussian process function.
+#'
+#' @param n (integer) A numeric number specifying the number of observations.
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X12 (dataframe, n*(p1\*p2)) The interaction items of first and second 
+#' types of factors in the dataframe.
+#' @param beta0 (numeric) Estimated bias of the model.
+#' @param alpha0 (vector of length n) Estimated coefficients of the estimated 
+#' ensemble kernel matrix.
+#' @param K_gpr (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param sigma2_hat (numeric) The estimated noise of the fixed effects.
+#' @param tau_hat (numeric) The estimated noise of the random effects.
+#' @param B (integer) A numeric value indicating times of resampling 
+#' when test = "boot".
+#' @return \item{pvalue}{(numeric) p-value of the test.}
+#' @author Wenying Deng
+#' @seealso method: \code{\link{generate_kernel}}
+#'
+#' mode: \code{\link{tuning}}
+#'
+#' strategy: \code{\link{ensemble}}
+#' @references Xihong Lin. Variance component testing in generalised linear
+#' models with random effects. June 1997.
+#'
+#' Arnab Maity and Xihong Lin. Powerful tests for detecting a gene effect in
+#' the presence of possible gene-gene interactions using garrote kernel
+#' machines. December 2011.
+#'
+#' Petra Bu ̊zˇkova ́, Thomas Lumley, and Kenneth Rice. Permutation and
+#' parametric bootstrap tests for gene-gene and gene-environment interactions.
+#' January 2011.
+#' 
+#' @export test_asym
 test_asym <- function(n, Y, X12, beta0, alpha0,
                       K_gpr, sigma2_hat, tau_hat, B) {
   
   score_chi <-
-    compute_stat(n, Y, X12, beta0, sigma2_hat, tau_hat, K_gpr)
+    compute_stat(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
   
   K0 <- K_gpr
   K12 <- X12 %*% t(X12)
@@ -135,18 +177,61 @@ test_asym <- function(n, Y, X12, beta0, alpha0,
 }
 
 
+
+#' Conducting Score Tests for Interaction Using Bootstrap Test
+#'
+#' Conduct score tests comparing a fitted model and a more general alternative
+#' model using bootstrap test.
+#'
+#' \bold{Bootstrap Test}
+#'
+#' When it comes to small sample size, we can use bootstrap test instead, which
+#' can give valid tests with moderate sample sizes and requires similar
+#' computational effort to a permutation test.
+#'
+#' @param n (integer) A numeric number specifying the number of observations.
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X12 (dataframe, n*(p1\*p2)) The interaction items of first and second 
+#' types of factors in the dataframe.
+#' @param beta0 (numeric) Estimated bias of the model.
+#' @param alpha0 (vector of length n) Estimated coefficients of the estimated 
+#' ensemble kernel matrix.
+#' @param K_gpr (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param sigma2_hat (numeric) The estimated noise of the fixed effects.
+#' @param tau_hat (numeric) The estimated noise of the random effects.
+#' @param B (integer) A numeric value indicating times of resampling 
+#' when test = "boot".
+#' @return \item{pvalue}{(numeric) p-value of the test.}
+#' @author Wenying Deng
+#' @seealso method: \code{\link{generate_kernel}}
+#'
+#' mode: \code{\link{tuning}}
+#'
+#' strategy: \code{\link{ensemble}}
+#' @references Xihong Lin. Variance component testing in generalised linear
+#' models with random effects. June 1997.
+#'
+#' Arnab Maity and Xihong Lin. Powerful tests for detecting a gene effect in
+#' the presence of possible gene-gene interactions using garrote kernel
+#' machines. December 2011.
+#'
+#' Petra Bu ̊zˇkova ́, Thomas Lumley, and Kenneth Rice. Permutation and
+#' parametric bootstrap tests for gene-gene and gene-environment interactions.
+#' January 2011.
+#' 
+#' @export test_boot
 test_boot <- function(n, Y, X12, beta0, alpha0,
                       K_gpr, sigma2_hat, tau_hat, B) {
   
   meanY <- K_gpr %*% alpha0 + beta0
   bs_test <- sapply(1:B, function(k) {
     Ystar <- meanY + rnorm(n, sd = sqrt(sigma2_hat))
-    compute_stat(n, Ystar, X12, beta0, sigma2_hat, tau_hat, K_gpr)
+    compute_stat(n, Ystar, X12, beta0, K_gpr, sigma2_hat, tau_hat)
   })
   
   # assemble test statistic
   original_test <-
-    compute_stat(n, Y, X12, beta0, sigma2_hat, tau_hat, K_gpr)
+    compute_stat(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
   
   pvalue <- sum(as.numeric(original_test) <= bs_test) / B
   

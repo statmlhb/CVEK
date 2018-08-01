@@ -86,7 +86,7 @@ generate_formula <-
 #' @param p (integer) For polynomial, p is the power; for matern, v = p + 1 / 2; 
 #' for rational, alpha = p.
 #' @param eps (numeric) A numeric number indicating the size of noise.
-#' @return \item{data, n*P}{(dataframe) A dataframe to be fitted.}
+#' @return \item{data}{(dataframe, n*P) A dataframe to be fitted.}
 #' @author Wenying Deng
 #' @examples
 #'
@@ -208,9 +208,9 @@ estimate_noise <- function(Y, lambda_hat, beta_hat, alpha_hat, K_hat) {
 #' @param X12 (dataframe, n*(p1\*p2)) The interaction items of first and second 
 #' types of factors in the dataframe.
 #' @param beta0 (numeric) Estimated bias of the model.
+#' @param K_gpr (matrix, n*n) Estimated ensemble kernel matrix.
 #' @param sigma2_hat (numeric) The estimated noise of the fixed effects.
 #' @param tau_hat (numeric) The estimated noise of the random effects.
-#' @param K_gpr (matrix, n*n) Estimated ensemble kernel matrix.
 #' @return \item{test_stat}{(numeric) The computed test statistic.}
 #' @author Wenying Deng
 #' @references Arnab Maity and Xihong Lin. Powerful tests for detecting a gene
@@ -219,12 +219,12 @@ estimate_noise <- function(Y, lambda_hat, beta_hat, alpha_hat, K_hat) {
 #' @examples
 #'
 #'
-#' compute_stat(n = 100, Y, X12, beta0, sigma2_hat, tau_hat, K_gpr)
+#' compute_stat(n = 100, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
 #'
 #'
 #' @export compute_stat
 compute_stat <-
-  function(n, Y, X12, beta0, sigma2_hat, tau_hat, K_gpr) {
+  function(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat) {
 
     K0 <- K_gpr
     K12 <- X12 %*% t(X12)

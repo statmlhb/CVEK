@@ -2,11 +2,36 @@ compute_info            Computing Information Matrices
 compute_stat            Computing Score Test Statistics.
 define_model            Defining the Model
 ensemble                Estimating Ensemble Kernel Matrices
+ensemble_avg            Estimating Ensemble Kernel Matrices Using AVG
+ensemble_erm            Estimating Ensemble Kernel Matrices Using ERM
+ensemble_exp            Estimating Ensemble Kernel Matrices Using EXP
 estimate_base           Estimating Projection Matrices
 estimate_noise          Estimating Noise
 estimation              Conducting Gaussian Process Regression
 generate_data           Generating Original Data
 generate_formula        From Vectors to Single Variables
 generate_kernel         Generating A Single Kernel
+kernel_intercept        Generating A Single Point-wise Function Using
+                        Intercept
+kernel_linear           Generating A Single Point-wise Function Using
+                        Linear
+kernel_matern           Generating A Single Point-wise Function Using
+                        Matern
+kernel_nn               Generating A Single Point-wise Function Using
+                        Neural Network
+kernel_polynomial       Generating A Single Point-wise Function Using
+                        Polynomial
+kernel_rational         Generating A Single Point-wise Function Using
+                        Rational Quadratic
+kernel_rbf              Generating A Single Point-wise Function Using
+                        RBF
+test_asym               Conducting Score Tests for Interaction Using
+                        Asymptotic Test
+test_boot               Conducting Score Tests for Interaction Using
+                        Bootstrap Test
 testing                 Conducting Score Tests for Interaction
 tuning                  Calculating Tuning Parameters
+tuning_AICc             Calculating Tuning Parameters Using AICc
+tuning_GCVc             Calculating Tuning Parameters Using GCVc
+tuning_gmpml            Calculating Tuning Parameters Using GMPML
+tuning_loocv            Calculating Tuning Parameters Using looCV

@@ -24,8 +24,8 @@ parameter criteria is to be used.}
 \item{strategy}{(character) A character string indicating which ensemble 
 strategy is to be used.}
 
-\item{beta}{(numeric) A numeric value specifying the parameter 
-when strategy = "exp".}
+\item{beta}{(numeric/character) A numeric value specifying the parameter 
+when strategy = "exp" \code{\link{ensemble_exp}}.}
 
 \item{lambda}{(numeric) A numeric string specifying the range of 
 noise to be chosen. The lower limit of lambda must be above 0.}

@@ -27,7 +27,7 @@ for rational, alpha = p.}
 \item{eps}{(numeric) A numeric number indicating the size of noise.}
 }
 \value{
-\item{data, n*P}{(dataframe) A dataframe to be fitted.}
+\item{data}{(dataframe, n*P) A dataframe to be fitted.}
 }
 \description{
 Generate original data based on specific kernels.

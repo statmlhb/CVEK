@@ -74,6 +74,44 @@ tuning <-
   }
 
 
+
+#' Calculating Tuning Parameters Using AICc
+#' 
+#' Calculate tuning parameters based on AICc.
+#' 
+#' \bold{Akaike Information Criteria}
+#' 
+#' \deqn{\lambda_{AICc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star
+#' T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n-tr(A_\lambda)-3}\Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_AICc
 tuning_AICc <-
   function(Y, K_mat, lambda) {
     
@@ -89,6 +127,44 @@ tuning_AICc <-
   }
 
 
+
+#' Calculating Tuning Parameters Using GCVc
+#' 
+#' Calculate tuning parameters based on GCVc.
+#' 
+#' \bold{Generalized Cross Validation}
+#' 
+#' \deqn{\lambda_{GCVc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star
+#' T}(I-A_\lambda)^2y^\star-2log[1-\frac{tr(A_\lambda)}{n}-\frac{2}{n}]_+\Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_GCVc
 tuning_GCVc <-
   function(Y, K_mat, lambda) {
     
@@ -104,6 +180,44 @@ tuning_GCVc <-
   }
 
 
+
+#' Calculating Tuning Parameters Using GMPML
+#' 
+#' Calculate tuning parameters based on Generalized Maximum Profile Marginal Likelihood.
+#' 
+#' \bold{Generalized Maximum Profile Marginal Likelihood}
+#' 
+#' \deqn{\lambda_{GMPML}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star T}(I-A_\lambda)y^\star-\frac{1}{n-1}log \mid I-A_\lambda \mid
+#' \Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_gmpml
 tuning_gmpml <-
   function(Y, K_mat, lambda) {
     
@@ -119,6 +233,45 @@ tuning_gmpml <-
   }
 
 
+
+#' Calculating Tuning Parameters Using looCV
+#' 
+#' Calculate tuning parameters based on given leave-one-out Cross Validation.
+#' 
+#' \bold{leave-one-out Cross Validation}
+#' 
+#' \deqn{\lambda_{n-CV}=\underset{\lambda \in
+#' \Lambda}{argmin}\;\Big\{log\;y^{\star
+#' T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}y^\star
+#' \Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_loocv
 tuning_loocv <-
   function(Y, K_mat, lambda) {
     

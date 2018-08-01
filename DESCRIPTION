@@ -17,8 +17,7 @@ RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-07-27 04:06:42 UTC; dorabeedeng
+Packaged: 2018-08-01 02:07:08 UTC; dorabeedeng
 Author: Wenying Deng [aut, cre],
   Jeremiah Zhe Liu [ctb]
 Maintainer: Wenying Deng <wdeng@hsph.harvard.edu>
-Built: R 3.5.0; ; 2018-07-27 04:06:51 UTC; unix

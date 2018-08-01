@@ -19,8 +19,8 @@
 #' parameter criteria is to be used.
 #' @param strategy (character) A character string indicating which ensemble 
 #' strategy is to be used.
-#' @param beta (numeric) A numeric value specifying the parameter 
-#' when strategy = "exp".
+#' @param beta (numeric/character) A numeric value specifying the parameter 
+#' when strategy = "exp" \code{\link{ensemble_exp}}.
 #' @param lambda (numeric) A numeric string specifying the range of 
 #' noise to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lam}{(numeric) The selected tuning parameter based on the 
