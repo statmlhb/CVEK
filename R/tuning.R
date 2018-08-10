@@ -70,7 +70,12 @@ tuning <-
     
     mode <- match.arg(mode, c("AICc", "GCVc", "gmpml", "loocv"))
     func_name <- paste0("tuning_", mode)
-    do.call(func_name, list(Y = Y, K_mat = K_mat, lambda = lambda))
+    lambda_selected <- do.call(func_name, list(Y = Y, K_mat = K_mat, lambda = lambda))
+    if (length(lambda_selected) != 1){
+      warning(paste0("Multiple (", length(lambda_selected), 
+                     ") optimal lambda's found, returning the smallest one.")
+    }
+    min(lambda_selected)
   }
 
 
@@ -121,9 +126,8 @@ tuning_AICc <-
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / (n - tr(A) - 3)
     })
-    lambda0 <- lambda[which(CV == min(CV))]
     
-    lambda0
+    lambda[which(CV == min(CV))]
   }
 
 
@@ -174,9 +178,8 @@ tuning_GCVc <-
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
         2 * log(max(0, 1 - tr(A) / n - 2 / n))
     })
-    lambda0 <- lambda[which(CV == min(CV))]
     
-    lambda0
+    lambda[which(CV == min(CV))]
   }
 
 
@@ -227,9 +230,8 @@ tuning_gmpml <-
       log(t(Y) %*% (diag(n) - A) %*% Y) -
         1 / (n - 1) * log(det((diag(n) - A)))
     })
-    lambda0 <- lambda[which(CV == min(CV))]
     
-    lambda0
+    lambda[which(CV == min(CV))]
   }
 
 
@@ -280,8 +282,7 @@ tuning_loocv <-
       A <- K_mat %*% ginv(K_mat + k * diag(n))
       sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)
     })
-    lambda0 <- lambda[which(CV == min(CV))]
     
-    lambda0
+    lambda[which(CV == min(CV))]
   }
 
