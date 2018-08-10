@@ -71,9 +71,9 @@ tuning <-
     mode <- match.arg(mode, c("AICc", "GCVc", "gmpml", "loocv"))
     func_name <- paste0("tuning_", mode)
     lambda_selected <- do.call(func_name, list(Y = Y, K_mat = K_mat, lambda = lambda))
-    if (length(lambda_selected) != 1){
+    if (length(lambda_selected) != 1) {
       warning(paste0("Multiple (", length(lambda_selected), 
-                     ") optimal lambda's found, returning the smallest one.")
+                     ") optimal lambda's found, returning the smallest one."))
     }
     min(lambda_selected)
   }
