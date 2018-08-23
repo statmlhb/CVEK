@@ -50,6 +50,7 @@
 
 generate_kernel <-
   function(method = "rbf", Sigma = 0, l = 1, p = 2) {
+    
     method <- match.arg(method, c("intercept", "linear", 
                                   "polynomial", "rbf", 
                                   "matern", "rational", "nn"))
@@ -89,9 +90,12 @@ generate_kernel <-
 #' @export kernel_intercept
 kernel_intercept <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p) {
+      
       1
     }
+    
     point_wise
   }
 
@@ -116,9 +120,12 @@ kernel_intercept <-
 #' @export kernel_linear
 kernel_linear <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p) {
+      
       t(xp) %*% xq
     }
+    
     point_wise
   }
 
@@ -143,9 +150,12 @@ kernel_linear <-
 #' @export kernel_polynomial
 kernel_polynomial <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p) {
+      
       (t(xp) %*% xq + 1) ^ p
     }
+    
     point_wise
   }
 
@@ -169,9 +179,12 @@ kernel_polynomial <-
 #' @export kernel_rbf
 kernel_rbf <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p) {
+      
       exp(- sum((xp - xq) ^ 2) / (2 * l ^ 2))
     }
+    
     point_wise
   }
 
@@ -197,7 +210,9 @@ kernel_rbf <-
 #' @export kernel_matern
 kernel_matern <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p){
+      
       r <- sqrt(sum((xp - xq) ^ 2))
       v <- p + 1 / 2
       s <- 0
@@ -205,8 +220,10 @@ kernel_matern <-
         s <- s + factorial(p + i) / (factorial(i) * factorial(p - i)) *
           (sqrt(8 * v) * r / l) ^ (p - i)
       }
+      
       exp(-sqrt(2 * v) * r / l) * gamma(p + 1) / gamma(2 * p + 1) * s
     }
+    
     point_wise
   }
 
@@ -231,10 +248,14 @@ kernel_matern <-
 #' @export kernel_rational
 kernel_rational <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p){
+      
       r <- sqrt(sum((xp - xq) ^ 2))
+      
       (1 + r ^ 2 / (2 * p * l ^ 2)) ^ (- p)
     }
+    
     point_wise
   }
 
@@ -261,14 +282,17 @@ kernel_rational <-
 #' @export kernel_nn
 kernel_nn <-
   function(Sigma, l, p) {
+    
     point_wise <- function(xp, xq, Sigma, l, p){
+      
       xp <- c(1, xp)
       xq <- c(1, xq)
       if(Sigma == 0) Sigma <- diag(length(xp))
       s <- 2 * t(xp) %*% Sigma %*% xq / (sqrt((1 + 2 * t(xp) %*% Sigma %*% xp)
                                               * (1 + 2 * t(xq) %*% Sigma %*% xq)))
+      
       asin(s)
     }
+    
     point_wise
   }
-

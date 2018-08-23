@@ -57,19 +57,15 @@ define_model <- function(formula, label_names, data, kern_par) {
   re <- generate_formula(formula, label_names)
   generic_formula0 <- re$generic_formula
   len <- re$length_main
-  
   X <- model.matrix(generic_formula0, data)[, -1]
-  
   n <- nrow(X)
   Xm <- colMeans(X)
   p <- ncol(X)
   X <- X - rep(Xm, rep(n, p))
   Xscale <- drop(rep(1 / n, n) %*% X ^ 2) ^ .5
   X <- X / rep(Xscale, rep(n, p))
-  
   X1 <- X[, c(1:length(label_names[[1]]))]
   X2 <- X[, c((length(label_names[[1]]) + 1):len)]
-  
   kern_list <- list()
   for (d in 1:nrow(kern_par)) {
     kern_list[[d]] <- generate_kernel(kern_par[d, ]$method,

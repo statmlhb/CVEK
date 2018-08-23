@@ -63,10 +63,6 @@ generate_formula <-
 
 
 
-
-
-
-
 #' Generating Original Data
 #'
 #' Generate original data based on specific kernels.
@@ -99,8 +95,9 @@ generate_formula <-
 #' @export generate_data
 generate_data <-
   function(n, label_names, 
-           method = "rbf", int_effect = 0,
-           l = 1, p = 2, eps = .01) {
+           method = "rbf", 
+           Sigma = 0, l = 1, p = 2, 
+           int_effect = 0, eps = .01) {
     
     X1 <- rmvnorm(n = n,
                   mean = rep(0, length(label_names[[1]])),
@@ -108,8 +105,7 @@ generate_data <-
     X2 <- rmvnorm(n = n,
                   mean = rep(0, length(label_names[[2]])),
                   sigma = diag(length(label_names[[2]])))
-    
-    kern <- generate_kernel(method = method, l = l, p = p)
+    kern <- generate_kernel(method = method, Sigma = Sigma, l = l, p = p)
     w1 <- rnorm(n)
     w2 <- w1
     w12 <- rnorm(n)
@@ -119,7 +115,6 @@ generate_data <-
     K2 <- K2 / tr(K2)
     h0 <- K1 %*% w1 + K2 %*% w2
     h0 <- h0 / sqrt(sum(h0 ^ 2))
-    
     h1_prime <- (K1 * K2) %*% w12
     Ks <- svd(K1 + K2)
     if (length(Ks$d / sum(Ks$d) > .001) > 0) {
@@ -139,17 +134,12 @@ generate_data <-
       h1 <- h1_prime
       h1 <- h1 / sqrt(sum(h1 ^ 2))
     }
-    
     Y <- h0 + int_effect * h1 + rnorm(1) + rnorm(n, 0, eps)
     data <- as.data.frame(cbind(Y, X1, X2))
     colnames(data) <- c("Y", label_names[[1]], label_names[[2]])
     
     data
   }
-
-
-
-
 
 
 
@@ -185,14 +175,10 @@ estimate_noise <- function(Y, lambda_hat, beta_hat, alpha_hat, K_hat) {
   Px <- one %*% ginv(t(one) %*% ginv(V) %*% one) %*% t(one) %*% ginv(V)
   Pk <- K_hat %*% ginv(V) %*% (diag(n) - Px)
   A <- Px + Pk
-  sigma2_hat <- sum((Y - beta_hat - K_hat %*% alpha_hat) ^ 2) / (n - tr(A))
+  sigma2_hat <- sum((Y - beta_hat - K_hat %*% alpha_hat) ^ 2) / (n - tr(A) - 1)
   
   sigma2_hat
  }
-
-
-
-
 
 
 
@@ -228,9 +214,7 @@ compute_stat <-
 
     K0 <- K_gpr
     K12 <- X12 %*% t(X12)
-
     V0_inv <- ginv(tau_hat * K0 + sigma2_hat * diag(n))
-
     test_stat <- tau_hat * t(Y - beta0) %*% V0_inv %*%
       K12 %*% V0_inv %*% (Y - beta0) / 2
 
@@ -272,21 +256,15 @@ compute_info <-
   function(P0_mat, mat_del = NULL, mat_sigma2 = NULL, mat_tau = NULL) {
     
     I0 <- matrix(NA, 3, 3)
-
     I0[1, 1] <- tr(P0_mat %*% mat_del %*% P0_mat %*% mat_del) / 2  
     I0[1, 2] <- tr(P0_mat %*% mat_del %*% P0_mat %*% mat_sigma2) / 2
     I0[2, 1] <- I0[1, 2]
-    
     I0[1, 3] <- tr(P0_mat %*% mat_del %*% P0_mat %*% mat_tau) / 2
     I0[3, 1] <- I0[1, 3]
-  
     I0[2, 2] <- tr(P0_mat %*% mat_sigma2 %*% P0_mat %*% mat_sigma2) / 2
-    
     I0[2, 3] <-  tr(P0_mat %*% mat_sigma2 %*% P0_mat %*% mat_tau) / 2  
     I0[3, 2] <- I0[2, 3]
-    
     I0[3, 3] <-  tr(P0_mat %*% mat_tau %*% P0_mat %*% mat_tau) / 2  
 
     I0
   }
-

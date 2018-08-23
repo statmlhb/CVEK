@@ -75,6 +75,7 @@ tuning <-
       warning(paste0("Multiple (", length(lambda_selected), 
                      ") optimal lambda's found, returning the smallest one."))
     }
+    
     min(lambda_selected)
   }
 
@@ -121,8 +122,12 @@ tuning_AICc <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
+    K1 <- cbind(1, K_mat)
+    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k) {
-      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      
+      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
+      
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / (n - tr(A) - 3)
     })
@@ -173,8 +178,12 @@ tuning_GCVc <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
+    K1 <- cbind(1, K_mat)
+    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k) {
-      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      
+      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
+      
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
         2 * log(max(0, 1 - tr(A) / n - 2 / n))
     })
@@ -225,8 +234,12 @@ tuning_gmpml <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
+    K1 <- cbind(1, K_mat)
+    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k){
-      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      
+      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
+      
       log(t(Y) %*% (diag(n) - A) %*% Y) -
         1 / (n - 1) * log(det((diag(n) - A)))
     })
@@ -278,8 +291,12 @@ tuning_loocv <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
+    K1 <- cbind(1, K_mat)
+    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k) {
-      A <- K_mat %*% ginv(K_mat + k * diag(n))
+      
+      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
+      
       sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)
     })
     

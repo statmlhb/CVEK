@@ -4,8 +4,8 @@
 \alias{generate_data}
 \title{Generating Original Data}
 \usage{
-generate_data(n, label_names, method = "rbf", int_effect = 0, l = 1,
-  p = 2, eps = 0.01)
+generate_data(n, label_names, method = "rbf", Sigma = 0, l = 1, p = 2,
+  int_effect = 0, eps = 0.01)
 }
 \arguments{
 \item{n}{(integer) A numeric number specifying the number of observations.}
@@ -16,13 +16,13 @@ variables included in each predictor.}
 \item{method}{(character) A character string indicating which kernel is 
 to be computed.}
 
-\item{int_effect}{(numeric) A numeric number specifying the size of interaction.}
-
 \item{l}{(numeric) A numeric number indicating the hyperparameter 
 (flexibility) of a specific kernel.}
 
 \item{p}{(integer) For polynomial, p is the power; for matern, v = p + 1 / 2; 
 for rational, alpha = p.}
+
+\item{int_effect}{(numeric) A numeric number specifying the size of interaction.}
 
 \item{eps}{(numeric) A numeric number indicating the size of noise.}
 }

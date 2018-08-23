@@ -78,18 +78,16 @@ testing <- function(formula_int, label_names, Y, X1, X2, kern_list,
   X <- model.matrix(generic_formula0, data)[, -1]
   X12 <- X[, c((len + 1):dim(X)[2])]
   n <- length(Y)
-  
   result <- estimation(Y, X1, X2, kern_list, mode, strategy, beta, lambda)
-  lam <- result[[1]]
-  beta0 <- result[[2]]
-  alpha0 <- result[[3]]
-  K_gpr <- result[[4]]
-  # u_weight <- result[[5]]
+  lam <- result$lam
+  beta0 <- result$intercept
+  alpha0 <- result$alpha
+  K_gpr <- result$K
   sigma2_hat <- estimate_noise(Y, lam, beta0, alpha0, K_gpr)
   tau_hat <- sigma2_hat / lam
-  
   test <- match.arg(test, c("asym", "boot"))
   func_name <- paste0("test_", test)
+  
   do.call(func_name, list(n = n, Y = Y, X12 = X12, 
                           beta0 = beta0, alpha0 = alpha0,
                           K_gpr = K_gpr, sigma2_hat = sigma2_hat, 
@@ -144,33 +142,25 @@ test_asym <- function(n, Y, X12, beta0, alpha0,
   
   score_chi <-
     compute_stat(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
-  
   K0 <- K_gpr
   K12 <- X12 %*% t(X12)
   V0_inv <- ginv(tau_hat * K0 + sigma2_hat * diag(n))
   one <- rep(1, n)
   P0_mat <- V0_inv - V0_inv %*%
     one %*% ginv(t(one) %*% V0_inv %*% one) %*% t(one) %*% V0_inv
-  
   drV0_tau <- K0
   drV0_sigma2 <- diag(n)
   drV0_del <- tau_hat * K12
-  
   I0 <- compute_info(P0_mat,
                      mat_del = drV0_del, mat_sigma2 = drV0_sigma2,
                      mat_tau = drV0_tau)
-  
-  #Effective Info for delta
   tot_dim <- ncol(I0)
   I_deldel <-
     I0[1, 1] -
     I0[1, 2:tot_dim] %*% ginv(I0[2:tot_dim, 2:tot_dim]) %*% I0[2:tot_dim, 1]
-  
   md <- tau_hat * tr(K12 %*% P0_mat) / 2
-  
   m_chi <- I_deldel / (2 * md)
   d_chi <- md / m_chi
-  
   pvalue <- 1 - pchisq(score_chi / m_chi, d_chi)
   
   pvalue
@@ -228,13 +218,9 @@ test_boot <- function(n, Y, X12, beta0, alpha0,
     Ystar <- meanY + rnorm(n, sd = sqrt(sigma2_hat))
     compute_stat(n, Ystar, X12, beta0, K_gpr, sigma2_hat, tau_hat)
   })
-  
-  # assemble test statistic
   original_test <-
     compute_stat(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
-  
   pvalue <- sum(as.numeric(original_test) <= bs_test) / B
   
   pvalue
 }
-

@@ -69,6 +69,7 @@ ensemble <-
     
     strategy <- match.arg(strategy, c("avg", "exp", "erm"))
     func_name <- paste0("ensemble_", strategy)
+    
     do.call(func_name, list(n = n, kern_size = kern_size, beta = beta,
                             error_mat = error_mat, A_hat = A_hat))
   }
@@ -119,6 +120,7 @@ ensemble <-
 #' @export ensemble_erm
 ensemble_erm <- 
   function(n, kern_size, beta, error_mat, A_hat) {
+    
     A <- error_mat
     B <- rep(0, n)
     E <- rep(1, kern_size)
@@ -240,7 +242,6 @@ ensemble_exp <-
   function(n, kern_size, beta, error_mat, A_hat) {
     
     A <- error_mat
-    
     if (beta == "med") {
       beta <- median(apply(A, 2, function(x) sum(x ^ 2)))
     } else if (beta == "min") {
@@ -248,7 +249,6 @@ ensemble_exp <-
     } else if (beta == "max") {
       beta <- max(apply(A, 2, function(x) sum(x ^ 2))) * 2
     }
-    
     u_hat <- apply(A, 2, function(x) {
       exp(sum(-x ^ 2 / beta))
     })

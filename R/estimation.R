@@ -54,18 +54,17 @@ estimation <- function(Y, X1, X2, kern_list,
   out <- estimate_base(n, kern_size, Y, X1, X2, kern_list, mode, lambda)
   A_hat <- out$A_hat
   error_mat <- out$error_mat
-  
   out2 <- ensemble(n, kern_size, strategy, beta, error_mat, A_hat)
   A_est <- out2$A_est
   u_hat <- out2$u_hat
-  
   As <- svd(A_est)
-  K_hat <- As$u %*% diag(As$d / (1 - As$d)) %*% t(As$u)
-  
+  U <- As$u
+  d <- As$d
+  K_hat <- U %*% diag(d[which(d > 1e-11)], nrow = dim(U)[2], 
+                          ncol = dim(U)[2]) %*% t(U)
   lambda0 <- tuning(Y, K_hat, mode, lambda)
   K1 <- cbind(1, K_hat)
   K2 <- cbind(0, rbind(0, K_hat))
-  
   theta <- ginv(lambda0 * K2 + t(K1) %*% K1) %*% t(K1) %*% Y
   beta0 <- theta[1]
   alpha <- theta[-1]
@@ -116,17 +115,12 @@ estimate_base <- function(n, kern_size, Y, X1, X2,
   
   A_hat <- list()
   error_mat <- matrix(0, nrow = n, ncol = kern_size)
-  
   for (d in seq(kern_size)) {
     kern <- kern_list[[d]]
     K1_m <- kern(X1, X1)
     K2_m <- kern(X2, X2)
-    if (tr(K1_m) > 0 & tr(K2_m) > 0) {
-      K1_m <- K1_m / tr(K1_m)
-      K2_m <- K2_m / tr(K2_m)
-    }
-    K <- K1_m + K2_m
-    if (length(lambda) != 1) {
+    K <- (K1_m + K2_m) / tr(K1_m + K2_m)
+    if (length(lambda) != 0) {
       lambda0 <- tuning(Y, K, mode, lambda)
       K1 <- cbind(1, K)
       K2 <- cbind(0, rbind(0, K))
