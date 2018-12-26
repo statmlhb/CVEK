@@ -96,7 +96,7 @@ generate_formula <-
 generate_data <-
   function(n, label_names, 
            method = "rbf", 
-           Sigma = 0, l = 1, p = 2, 
+           l = 1, p = 2, 
            int_effect = 0, eps = .01) {
     
     X1 <- rmvnorm(n = n,
@@ -105,7 +105,7 @@ generate_data <-
     X2 <- rmvnorm(n = n,
                   mean = rep(0, length(label_names[[2]])),
                   sigma = diag(length(label_names[[2]])))
-    kern <- generate_kernel(method = method, Sigma = Sigma, l = l, p = p)
+    kern <- generate_kernel(method = method, l = l, p = p)
     w1 <- rnorm(n)
     w2 <- w1
     w12 <- rnorm(n)

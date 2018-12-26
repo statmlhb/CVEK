@@ -69,7 +69,6 @@ define_model <- function(formula, label_names, data, kern_par) {
   kern_list <- list()
   for (d in 1:nrow(kern_par)) {
     kern_list[[d]] <- generate_kernel(kern_par[d, ]$method,
-                                      kern_par[d, ]$Sigma,
                                       kern_par[d, ]$l,
                                       kern_par[d, ]$p)
   }

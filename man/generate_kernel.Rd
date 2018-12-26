@@ -4,13 +4,11 @@
 \alias{generate_kernel}
 \title{Generating A Single Kernel}
 \usage{
-generate_kernel(method = "rbf", Sigma = 0, l = 1, p = 2)
+generate_kernel(method = "rbf", l = 1, p = 2)
 }
 \arguments{
 \item{method}{(character) A character string indicating which kernel 
 is to be computed.}
-
-\item{Sigma}{(matrix) The covariance matrix for neural network kernel.}
 
 \item{l}{(numeric) A numeric number indicating the hyperparameter 
 (flexibility) of a specific kernel.}
@@ -41,8 +39,8 @@ l^2}\Big)^{-\alpha}}
 kernel when \eqn{p=0}, and linear kernel when \eqn{p=1}.
 
 \bold{Neural Network Kernels} \deqn{k_{NN}(x,
-x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T\Sigma
-\tilde{x}'}{\sqrt{(1+2\tilde{x}^T\Sigma \tilde{x})(1+2\tilde{x}'^T\Sigma
+x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T
+\tilde{x}'}{\sqrt{(1+2\tilde{x}^T \tilde{x})(1+2\tilde{x}'^T
 \tilde{x}')}}\Big)}
 }
 \examples{
@@ -51,7 +49,6 @@ x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T\Sigma
 kern_list <- list()
 for (d in 1:nrow(kern_par)) {
   kern_list[[d]] <- generate_kernel(kern_par[d, ]$method,
-                                    kern_par[d, ]$Sigma,
                                     kern_par[d, ]$l,
                                     kern_par[d, ]$p)
 }

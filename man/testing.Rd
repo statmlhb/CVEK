@@ -5,7 +5,7 @@
 \title{Conducting Score Tests for Interaction}
 \usage{
 testing(formula_int, label_names, Y, X1, X2, kern_list, mode = "loocv",
-  strategy = "erm", beta = 1, test = "boot", lambda = exp(seq(-5, 5)),
+  strategy = "erm", beta = 1, test = "boot", lambda = exp(seq(-10, 5)),
   B = 100)
 }
 \arguments{
@@ -45,6 +45,10 @@ hen test = "boot".}
 }
 \value{
 \item{pvalue}{(numeric) p-value of the test.}
+\item{lambda}{(numeric) The selected tuning parameter based on the 
+estimated ensemble kernel matrix.}
+\item{u_hat}{(vector of length K) A vector of weights of the kernels in 
+the library.}
 }
 \description{
 Conduct score tests comparing a fitted model and a more general alternative
@@ -70,7 +74,7 @@ computational effort to a permutation test.
 testing(formula_int = Y ~ X1 * X2,
 label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
 Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-beta = 1, test = "boot", lambda = exp(seq(-5, 5)), B = 100)
+beta = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
 
 
 }

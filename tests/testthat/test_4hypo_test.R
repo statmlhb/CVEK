@@ -6,7 +6,7 @@ test_that("range of output", {
   test <- "boot"
   B <- 100
   pvalue <- testing(formula_int, label_names, fit$Y, fit$X1, fit$X2, fit$kern_list, 
-                    mode = "loocv", strategy, beta = 1, test, lambda, B)
+                    mode = "loocv", strategy, beta = 1, test, lambda, B)$pvalue
   expect_lte(pvalue, 1)
   expect_gte(pvalue, 0)
 })

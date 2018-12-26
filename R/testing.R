@@ -39,6 +39,10 @@
 #' @param B (integer) A numeric value indicating times of resampling w
 #' hen test = "boot".
 #' @return \item{pvalue}{(numeric) p-value of the test.}
+#' \item{lambda}{(numeric) The selected tuning parameter based on the 
+#' estimated ensemble kernel matrix.}
+#' \item{u_hat}{(vector of length K) A vector of weights of the kernels in 
+#' the library.}
 #' @author Wenying Deng
 #' @seealso method: \code{\link{generate_kernel}}
 #'
@@ -61,14 +65,14 @@
 #' testing(formula_int = Y ~ X1 * X2,
 #' label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
 #' Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-#' beta = 1, test = "boot", lambda = exp(seq(-5, 5)), B = 100)
+#' beta = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
 #'
 #'
 #' @export testing
 
 testing <- function(formula_int, label_names, Y, X1, X2, kern_list,
                     mode = "loocv", strategy = "erm", beta = 1,
-                    test = "boot", lambda = exp(seq(-5, 5)), B = 100) {
+                    test = "boot", lambda = exp(seq(-10, 5)), B = 100) {
   
   re <- generate_formula(formula_int, label_names)
   generic_formula0 <- re$generic_formula
@@ -78,20 +82,25 @@ testing <- function(formula_int, label_names, Y, X1, X2, kern_list,
   X <- model.matrix(generic_formula0, data)[, -1]
   X12 <- X[, c((len + 1):dim(X)[2])]
   n <- length(Y)
+  
   result <- estimation(Y, X1, X2, kern_list, mode, strategy, beta, lambda)
-  lam <- result$lam
-  beta0 <- result$intercept
+  lambda <- result$lambda
+  beta0 <- result$beta[1, 1]
   alpha0 <- result$alpha
   K_gpr <- result$K
-  sigma2_hat <- estimate_noise(Y, lam, beta0, alpha0, K_gpr)
-  tau_hat <- sigma2_hat / lam
-  test <- match.arg(test, c("asym", "boot"))
+  u_hat <- result$u_hat
+  base_est <- result$base_est
+  sigma2_hat <- estimate_noise(Y, lambda, beta0, alpha0, K_gpr)
+  tau_hat <- sigma2_hat / lambda
+  
   func_name <- paste0("test_", test)
   
-  do.call(func_name, list(n = n, Y = Y, X12 = X12, 
-                          beta0 = beta0, alpha0 = alpha0,
-                          K_gpr = K_gpr, sigma2_hat = sigma2_hat, 
-                          tau_hat = tau_hat, B = B))
+  pvalue <- do.call(func_name, list(n = n, Y = Y, X12 = X12, 
+                                    beta0 = beta0, alpha0 = alpha0,
+                                    K_gpr = K_gpr, sigma2_hat = sigma2_hat, 
+                                    tau_hat = tau_hat, B = B))
+  
+  list(pvalue = pvalue, lambda = lambda, u_hat = u_hat)
 }
 
 
@@ -145,9 +154,9 @@ test_asym <- function(n, Y, X12, beta0, alpha0,
   K0 <- K_gpr
   K12 <- X12 %*% t(X12)
   V0_inv <- ginv(tau_hat * K0 + sigma2_hat * diag(n))
-  one <- rep(1, n)
+  X = matrix(1, nrow = n, ncol = 1)
   P0_mat <- V0_inv - V0_inv %*%
-    one %*% ginv(t(one) %*% V0_inv %*% one) %*% t(one) %*% V0_inv
+    X %*% ginv(t(X) %*% V0_inv %*% X) %*% t(X) %*% V0_inv
   drV0_tau <- K0
   drV0_sigma2 <- diag(n)
   drV0_del <- tau_hat * K12

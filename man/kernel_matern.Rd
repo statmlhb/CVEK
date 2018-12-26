@@ -2,13 +2,11 @@
 % Please edit documentation in R/generate_kernel.R
 \name{kernel_matern}
 \alias{kernel_matern}
-\title{Generating A Single Point-wise Function Using Matern}
+\title{Generating A Single vector-wise Function Using Matern}
 \usage{
-kernel_matern(Sigma, l, p)
+kernel_matern(l, p)
 }
 \arguments{
-\item{Sigma}{(matrix) The covariance matrix for neural network kernel.}
-
 \item{l}{(numeric) A numeric number indicating the hyperparameter 
 (flexibility) of a specific kernel.}
 
@@ -16,11 +14,11 @@ kernel_matern(Sigma, l, p)
 rational, alpha = p.}
 }
 \value{
-\item{point_wise}{(function) A function calculating 
+\item{vector_wise}{(function) A function calculating 
 the relevance of two vectors.}
 }
 \description{
-Generate point-wise functions for two vectors using matern kernel.
+Generate vector-wise functions for two vectors using matern kernel.
 }
 \details{
 \bold{Matern Kernels}

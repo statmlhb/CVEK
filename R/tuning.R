@@ -68,7 +68,7 @@
 tuning <-
   function(Y, K_mat, mode, lambda) {
     
-    mode <- match.arg(mode, c("AICc", "GCVc", "gmpml", "loocv"))
+    mode <- match.arg(mode, c("AIC", "AICc", "BIC", "GCV", "GCVc", "gmpml", "loocv"))
     func_name <- paste0("tuning_", mode)
     lambda_selected <- do.call(func_name, list(Y = Y, K_mat = K_mat, lambda = lambda))
     if (length(lambda_selected) != 1) {
@@ -79,6 +79,60 @@ tuning <-
     min(lambda_selected)
   }
 
+
+#' Calculating Tuning Parameters Using AIC
+#' 
+#' Calculate tuning parameters based on AIC.
+#' 
+#' \bold{Akaike Information Criteria}
+#' 
+#' \deqn{\lambda_{AIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star
+#' T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n}\Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_AIC
+tuning_AIC <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k) {
+      
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix
+      A <- proj_matrix$total
+      log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
+        2 * (tr(A) + 2) / n
+    })
+    
+    lambda[which(CV == min(CV))]
+  }
 
 
 #' Calculating Tuning Parameters Using AICc
@@ -122,14 +176,125 @@ tuning_AICc <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
-    K1 <- cbind(1, K_mat)
-    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k) {
-      
-      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
-      
+
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix
+      A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / (n - tr(A) - 3)
+    })
+    
+    lambda[which(CV == min(CV))]
+  }
+
+
+#' Calculating Tuning Parameters Using BIC
+#' 
+#' Calculate tuning parameters based on BIC.
+#' 
+#' \bold{Akaike Information Criteria}
+#' 
+#' \deqn{\lambda_{BIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star
+#' T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_BIC
+tuning_BIC <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k) {
+      
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix
+      A <- proj_matrix$total
+      log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
+        log(n) * (tr(A) + 2) / n
+    })
+    
+    lambda[which(CV == min(CV))]
+  }
+
+
+#' Calculating Tuning Parameters Using GCV
+#' 
+#' Calculate tuning parameters based on GCV.
+#' 
+#' \bold{Generalized Cross Validation}
+#' 
+#' \deqn{\lambda_{GCV}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star
+#' T}(I-A_\lambda)^2y^\star-2log[1-\frac{tr(A_\lambda)}{n}-\frac{1}{n}]_+\Big\}}
+#' 
+#' @param Y (vector of length n) Reponses of the dataframe.
+#' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param lambda (numeric) A numeric string specifying the range of noise 
+#' to be chosen. The lower limit of lambda must be above 0.
+#' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
+#' @author Wenying Deng
+#' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
+#' A Small-Sample Choice of the Tuning Parameter in Ridge Regression. July
+#' 2015.
+#' 
+#' Trevor Hastie, Robert Tibshirani, and Jerome Friedman. The Elements of
+#' Statistical Learning: Data Mining, Inference, and Prediction, Second
+#' Edition. Springer Series in Statistics. Springer- Verlag, New York, 2
+#' edition, 2009.
+#' 
+#' Hirotogu Akaike. Information Theory and an Extension of the Maximum
+#' Likelihood Princi- ple. In Selected Papers of Hirotugu Akaike, Springer
+#' Series in Statistics, pages 199–213. Springer, New York, NY, 1998.
+#' 
+#' Clifford M. Hurvich and Chih-Ling Tsai. Regression and time series model
+#' selection in small samples. June 1989.
+#' 
+#' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
+#' parameter selection in nonparametric regression using an improved Akaike
+#' information criterion. January 2002.
+#' 
+#' @export tuning_GCV
+tuning_GCV <-
+  function(Y, K_mat, lambda) {
+    
+    n <- nrow(K_mat)
+    CV <- sapply(lambda, function(k) {
+      
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+      A <- proj_matrix$total
+      
+      log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
+        2 * log(1 - tr(A) / n - 1 / n)
     })
     
     lambda[which(CV == min(CV))]
@@ -178,11 +343,12 @@ tuning_GCVc <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
-    K1 <- cbind(1, K_mat)
-    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k) {
       
-      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+      A <- proj_matrix$total
       
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
         2 * log(max(0, 1 - tr(A) / n - 2 / n))
@@ -234,14 +400,16 @@ tuning_gmpml <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
-    K1 <- cbind(1, K_mat)
-    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k){
       
-      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
-      
-      log(t(Y) %*% (diag(n) - A) %*% Y) -
-        1 / (n - 1) * log(det((diag(n) - A)))
+      A_kernel_only <- K_mat %*% ginv(K_mat + k * diag(n))
+      log_det <- unlist(determinant(diag(n) - A_kernel_only), 
+                        use.names = FALSE)[1]
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+      A <- proj_matrix$total
+      log(t(Y) %*% (diag(n) - A) %*% Y) - 1 / (n - 1) * log_det
     })
     
     lambda[which(CV == min(CV))]
@@ -291,11 +459,11 @@ tuning_loocv <-
   function(Y, K_mat, lambda) {
     
     n <- nrow(K_mat)
-    K1 <- cbind(1, K_mat)
-    K2 <- cbind(0, rbind(0, K_mat))
     CV <- sapply(lambda, function(k) {
-      
-      A <- K1 %*% ginv(t(K1) %*% K1 + k * K2) %*% t(K1)
+      proj_matrix <- 
+        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+      A <- proj_matrix$total
       
       sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)
     })

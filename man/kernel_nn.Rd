@@ -2,13 +2,11 @@
 % Please edit documentation in R/generate_kernel.R
 \name{kernel_nn}
 \alias{kernel_nn}
-\title{Generating A Single Point-wise Function Using Neural Network}
+\title{Generating A Single vector-wise Function Using Neural Network}
 \usage{
-kernel_nn(Sigma, l, p)
+kernel_nn(l, p)
 }
 \arguments{
-\item{Sigma}{(matrix) The covariance matrix for neural network kernel.}
-
 \item{l}{(numeric) A numeric number indicating the hyperparameter 
 (flexibility) of a specific kernel.}
 
@@ -16,16 +14,16 @@ kernel_nn(Sigma, l, p)
 rational, alpha = p.}
 }
 \value{
-\item{point_wise}{(function) A function calculating 
+\item{vector_wise}{(function) A function calculating 
 the relevance of two vectors.}
 }
 \description{
-Generate point-wise functions for two vectors using neural network kernel.
+Generate vector-wise functions for two vectors using neural network kernel.
 }
 \details{
 \bold{Neural Network Kernels} \deqn{k_{NN}(x,
-x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T\Sigma
-\tilde{x}'}{\sqrt{(1+2\tilde{x}^T\Sigma \tilde{x})(1+2\tilde{x}'^T\Sigma
+x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T
+\tilde{x}'}{\sqrt{(1+2\tilde{x}^T\tilde{x})(1+2\tilde{x}'^T
 \tilde{x}')}}\Big)}
 }
 \references{

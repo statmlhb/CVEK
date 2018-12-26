@@ -32,6 +32,18 @@ to be chosen. The lower limit of lambda must be above 0.}
 \item{A_hat}{(list of length K) A list of projection matrices for 
 every kernels in the kernel library.}
 
+\item{P_K_hat}{(list of length K) A list of projection matrices to 
+kernel space for every kernels in the kernel library.}
+
+\item{beta_list}{(list of length K) A list of estimated biases for 
+every kernels in the kernel library.}
+
+\item{alpha_list}{(list of length K) A list of estimated coefficients for 
+every kernels in the kernel library.}
+
+\item{lambda}{(list of length K) A list of selected tuning parameters 
+for every kernels in the kernel library.}
+
 \item{error_mat}{(matrix, n*K) A n\*kern_size matrix indicating errors.}
 }
 \description{

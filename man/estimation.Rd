@@ -5,7 +5,7 @@
 \title{Conducting Gaussian Process Regression}
 \usage{
 estimation(Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-  beta = 1, lambda = exp(seq(-5, 5)))
+  beta = 1, lambda = exp(seq(-10, 5)))
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
@@ -31,10 +31,10 @@ when strategy = "exp" \code{\link{ensemble_exp}}.}
 noise to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
-\item{lam}{(numeric) The selected tuning parameter based on the 
+\item{lambda}{(numeric) The selected tuning parameter based on the 
 estimated ensemble kernel matrix.}
 
-\item{intercept}{(numeric) Estimated bias of the model.}
+\item{beta}{(numeric) Estimated bias of the model.}
 
 \item{alpha}{(vector of length n) Estimated coefficients of the estimated 
 ensemble kernel matrix.}
@@ -43,6 +43,9 @@ ensemble kernel matrix.}
 
 \item{u_hat}{(vector of length K) A vector of weights of the kernels in 
 the library.}
+
+\item{base_est}{(list of length 6) The detailed estimation results of 
+K kernels.}
 }
 \description{
 Conduct gaussian process regression based on the estimated ensemble kernel
@@ -50,16 +53,13 @@ matrix.
 }
 \details{
 After obtaining the ensemble kernel matrix, we can calculate the outpur of
-gaussian process regression, the solution is given by
-\deqn{\hat{\beta}=[1^T(K+\lambda I)^{-1}1]^{-1}1^T(K+\lambda I)^{-1}y}
-\deqn{\hat{\alpha}=(K+\lambda I)^{-1}(y-\hat{\beta}1)} where
-\eqn{\beta=intercept}.
+gaussian process regression.
 }
 \examples{
 
 
 estimation(Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-beta = 1, lambda = exp(seq(-5, 5)))
+beta = 1, lambda = exp(seq(-10, 5)))
 
 
 }
