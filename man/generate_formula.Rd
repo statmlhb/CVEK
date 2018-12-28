@@ -9,15 +9,15 @@ generate_formula(formula, label_names)
 \arguments{
 \item{formula}{(formula) A symbolic description of the model to be fitted.}
 
-\item{label_names}{(list) A character string indicating all the interior 
-variables included in each predictor.}
+\item{label_names}{(list) A character string indicating all the interior
+variables included in each group of random effect.}
 }
 \value{
-\item{generic_formula}{(formula) A symbolic description of the 
-model written in single variables format.}
+\item{generic_formula}{(formula) A symbolic description of the model
+written in single variables format.}
 
-\item{length_main}{(integer) A numeric value indicating the length of 
-main effects.}
+\item{length_main}{(integer) A numeric value indicating the length of main
+random effects.}
 }
 \description{
 Transform format of predictors from vectors to single variables.
@@ -25,8 +25,10 @@ Transform format of predictors from vectors to single variables.
 \examples{
 
 
-generic_formula0 <- generate_formula(formula = Y ~ X1 + X2,
-label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")))
+
+generic_formula0 <- generate_formula(formula = Y ~ X + Z1 + Z2,
+label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")))
+
 
 
 }

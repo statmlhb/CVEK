@@ -7,42 +7,44 @@
 estimate_ridge(X, K, Y, lambda)
 }
 \arguments{
-\item{X}{(matrix) Fixed effects of the model.}
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
 
 \item{K}{(matrix, n*n) Kernel matrix.}
 
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of 
-noise to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise to be
+chosen. The lower limit of lambda must be above 0.}
 }
 \value{
-\item{lambda}{(numeric) The selected tuning parameter based on the 
+\item{lambda}{(numeric) The selected tuning parameter based on the
 estimated ensemble kernel matrix.}
 
-\item{beta}{(numeric) Estimated bias of the model.}
+\item{beta}{(matrix, p*1) Fixed effects estimator of the model.}
 
-\item{alpha}{(vector of length n) Estimated coefficients of the 
-single kernel matrix.}
+\item{alpha}{(vector of length n) Random effects estimator of the estimated
+ensemble kernel matrix.}
 
-\item{proj_matrix}{(list of length 4) Estimated projection matrices 
-of the model.}
+\item{proj_matrix}{(list of length 4) Estimated projection matrices of the
+model.}
 }
 \description{
 Estimating projection matrices and parameter estimates for a single model.
 }
 \details{
-For a single model, we can calculate the outpur of gaussian process 
-regression, the solution is given by
-\deqn{\hat{\beta}=[X^T(K+\lambda I)^{-1}X]^{-1}X^T(K+\lambda I)^{-1}y}
-\deqn{\hat{\alpha}=(K+\lambda I)^{-1}(y-\hat{\beta}X)} where
-\eqn{\beta=intercept}.
+For a single model, we can calculate the output of gaussian process
+regression, the solution is given by \deqn{\hat{\beta}=[X^T(K+\lambda
+I)^{-1}X]^{-1}X^T(K+\lambda I)^{-1}y} \deqn{\hat{\alpha}=(K+\lambda
+I)^{-1}(y-\hat{\beta}X)}.
 }
 \examples{
 
 
-estimate_ridge(X = matrix(1, nrow = 100, ncol = 1), K_hat, Y, 
+
+estimate_ridge(X = cbind(matrix(1, nrow = 100, ncol = 1), X), K_ens, Y, 
 lambda = exp(seq(-10, 5)))
+
 
 
 }

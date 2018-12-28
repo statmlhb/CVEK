@@ -4,23 +4,28 @@
 \alias{estimate_noise}
 \title{Estimating Noise}
 \usage{
-estimate_noise(Y, lambda_hat, beta_hat, alpha_hat, K_hat)
+estimate_noise(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{lambda_hat}{(numeric) The selected tuning parameter based on the 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
+\item{lambda_hat}{(numeric) The selected tuning parameter based on the
 estimated ensemble kernel matrix.}
 
-\item{beta_hat}{(numeric) Estimated bias of the model.}
+\item{y_fixed_hat}{(vector of length n) Estimated fixed effects of the
+responses.}
 
-\item{alpha_hat}{(vector of length n) Estimated coefficients of the estimated 
-ensemble kernel matrix.}
+\item{alpha_hat}{(vector of length n) Random effects estimator of the
+estimated ensemble kernel matrix.}
 
 \item{K_hat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 }
 \value{
-\item{sigma2_hat}{(numeric) The estimated noise of the fixed effects.}
+\item{sigma2_hat}{(numeric) The estimated noise of the fixed
+effects.}
 }
 \description{
 An implementation of Gaussian processes for estimating noise.
@@ -28,13 +33,15 @@ An implementation of Gaussian processes for estimating noise.
 \examples{
 
 
-sigma2_hat <- estimate_noise(Y, lam, beta0, alpha0, K_gpr)
+
+sigma2_hat <- estimate_noise(Y, X, lambda_hat, y_fixed, alpha0, K_ens)
+
 
 
 }
 \references{
 Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-Nonlinear Effect with Gaus- sian Processes. October 2017.
+Nonlinear Effect with Gaussian Processes. October 2017.
 }
 \author{
 Wenying Deng

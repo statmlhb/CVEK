@@ -4,21 +4,25 @@
 \alias{tuning_gmpml}
 \title{Calculating Tuning Parameters Using GMPML}
 \usage{
-tuning_gmpml(Y, K_mat, lambda)
+tuning_gmpml(Y, X, K_mat, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
-to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise to be
+chosen. The lower limit of lambda must be above 0.}
 }
 \value{
 \item{lambda0}{(numeric) The estimated tuning parameter.}
 }
 \description{
-Calculate tuning parameters based on Generalized Maximum Profile Marginal Likelihood.
+Calculate tuning parameters based on Generalized Maximum Profile Marginal
+Likelihood.
 }
 \details{
 \bold{Generalized Maximum Profile Marginal Likelihood}

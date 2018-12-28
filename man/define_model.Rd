@@ -4,29 +4,37 @@
 \alias{define_model}
 \title{Defining the Model}
 \usage{
-define_model(formula, label_names, data, kern_par)
+define_model(formula, data, kern_par = NULL, fixed_num = 1,
+  label_names = NULL)
 }
 \arguments{
 \item{formula}{(formula) A symbolic description of the model to be fitted.}
 
-\item{label_names}{(list) A character string indicating all the interior 
-variables included in each predictor. See Details.}
+\item{data}{(dataframe, n*(p+q1+q2)) A dataframe to be fitted. See Details.}
 
-\item{data}{(dataframe, n*P) A dataframe to be fitted. See Details.}
+\item{kern_par}{(dataframe, K*4) A dataframe indicating the parameters of
+base kernels to fit random effects. See Details.}
 
-\item{kern_par}{(dataframe, K*4) A dataframe indicating the parameters 
-of base kernels to be created. See Details.}
+\item{fixed_num}{(integer) A numeric number specifying the dimension of
+fixed effects.}
+
+\item{label_names}{(list) A character string indicating all the interior
+variables included in each group of random effect. See Details.}
 }
 \value{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X1}{(dataframe, n*p1) The first type of factor in the dataframe (could 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{X2}{(dataframe, n*p2) The second type of factor in the dataframe (could 
-contains several subfactors).}
+\item{Z1}{(dataframe, n*q1) The first group of random effects variables in
+the dataframe (could contains several subfactors).}
 
-\item{kern_list}{(list of length K) A list of kernel functions given by user.}
+\item{Z2}{(dataframe, n*q2) The second group of random effects variables in
+the dataframe (could contains several subfactors).}
+
+\item{kern_list}{(list of length K) A list of kernel functions given by
+user.}
 }
 \description{
 Give the complete formula and generate the expected kernel library.
@@ -35,32 +43,31 @@ Give the complete formula and generate the expected kernel library.
 It processes data based on formula and label_names and creates a kernel
 library according to the parameters given in kern_par.
 
-* label_names: for two subgroups with sizes p1 and p2 respectively,
-  label_names contains two elements. The length of the first element is p1, 
-  indicating the names of p1 interiors variables, and the length of second 
-  one is p2, indicating the names of p2 interiors variables.
-  
-* data: for a data with n observations and P=p1+p2 variables (with sub-groups 
-  of sizes (p1, p2)), the dimension of dataframe is n*P. All entries should
-  be numeric and the column name of response is "Y", while the column 
-  names of P variables are the ones from label_names.
-  
+* label_names: for two groups of random effects with sizes q1 and q2
+respectively, label_names contains two elements. The length of the first
+element is q1, indicating the names of q1 interiors variables, and the
+length of second one is q2, indicating the names of q2 interiors variables.
+
+* data: for a data with n observations and p+q variables (with sub-groups of
+sizes (q1, q2), q=q1+q2), the dimension of dataframe is n*(p+q). All entries
+should be numeric and the column name of response is "Y", while the column
+names of q variables are the ones from label_names.
+
 * kern_par: for a library of K kernels, the dimension of this dataframe is
-  K*4. Each row represents a kernel. The first column is method, with entries
-  of character class. The second is Sigma, with entries of matrix class, 
-  indicating the covariance matrix for neural network kernel (default=0).
-  The third and the fourth are l and p respectively, both with entries of 
-  numeric class.
+K*3. Each row represents a kernel. The first column is method, with entries
+of character class. The second and the third are l and p respectively, both
+with entries of numeric class.
 }
 \examples{
 
 
+
 kern_par <- data.frame(method = c("rbf", "polynomial", "matern"), 
-Sigma = rep(0, 3), l = c(.5, 1, 1.5), p = 1:3)
+l = c(.5, 1, 1.5), d = 1:3)
 kern_par$method <- as.character(kern_par$method)
-define_model(formula = Y ~ X1 + X2,
-label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
-data = dora, kern_par)
+define_model(formula = Y ~ X + Z1 + Z2, data = mydata, kern_par, 
+fixed_num = 1, label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")))
+
 
 
 }

@@ -4,17 +4,18 @@
 \alias{compute_stat}
 \title{Computing Score Test Statistics.}
 \usage{
-compute_stat(n, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
+compute_stat(n, Y, Z12, y_fixed, K_gpr, sigma2_hat, tau_hat)
 }
 \arguments{
 \item{n}{(integer) A numeric number specifying the number of observations.}
 
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X12}{(dataframe, n*(p1\*p2)) The interaction items of first and second 
-types of factors in the dataframe.}
+\item{Z12}{(dataframe, n*(q1\*q2)) The interaction items of the first and
+second groups of random effects variables in the dataframe.}
 
-\item{beta0}{(numeric) Estimated bias of the model.}
+\item{y_fixed}{(vector of length n) Estimated fixed effects of the
+responses.}
 
 \item{K_gpr}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
@@ -34,7 +35,9 @@ The test statistic is distributed as a scaled Chi-squared distribution.
 \examples{
 
 
-compute_stat(n = 100, Y, X12, beta0, K_gpr, sigma2_hat, tau_hat)
+
+compute_stat(n = 100, Y, Z12, y_fixed, K_ens, sigma2_hat, tau_hat)
+
 
 
 }

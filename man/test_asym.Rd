@@ -4,29 +4,33 @@
 \alias{test_asym}
 \title{Conducting Score Tests for Interaction Using Asymptotic Test}
 \usage{
-test_asym(n, Y, X12, beta0, alpha0, K_gpr, sigma2_hat, tau_hat, B)
+test_asym(n, Y, X, Z12, y_fixed, alpha0, K_ens, sigma2_hat, tau_hat, B)
 }
 \arguments{
 \item{n}{(integer) A numeric number specifying the number of observations.}
 
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X12}{(dataframe, n*(p1\*p2)) The interaction items of first and second 
-types of factors in the dataframe.}
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
 
-\item{beta0}{(numeric) Estimated bias of the model.}
+\item{Z12}{(dataframe, n*(q1\*q2)) The interaction items of the first and
+second groups of random effects variables in the dataframe.}
 
-\item{alpha0}{(vector of length n) Estimated coefficients of the estimated 
+\item{y_fixed}{(vector of length n) Estimated fixed effects of the
+responses.}
+
+\item{alpha0}{(vector of length n) Random effects estimator of the estimated
 ensemble kernel matrix.}
 
-\item{K_gpr}{(matrix, n*n) Estimated ensemble kernel matrix.}
+\item{K_ens}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
 \item{sigma2_hat}{(numeric) The estimated noise of the fixed effects.}
 
 \item{tau_hat}{(numeric) The estimated noise of the random effects.}
 
-\item{B}{(integer) A numeric value indicating times of resampling 
-when test = "boot".}
+\item{B}{(integer) A numeric value indicating times of resampling when test
+= "boot".}
 }
 \value{
 \item{pvalue}{(numeric) p-value of the test.}

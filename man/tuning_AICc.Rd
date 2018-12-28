@@ -4,15 +4,18 @@
 \alias{tuning_AICc}
 \title{Calculating Tuning Parameters Using AICc}
 \usage{
-tuning_AICc(Y, K_mat, lambda)
+tuning_AICc(Y, X, K_mat, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
-to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise to be
+chosen. The lower limit of lambda must be above 0.}
 }
 \value{
 \item{lambda0}{(numeric) The estimated tuning parameter.}
@@ -21,7 +24,7 @@ to be chosen. The lower limit of lambda must be above 0.}
 Calculate tuning parameters based on AICc.
 }
 \details{
-\bold{Akaike Information Criteria}
+\bold{Akaike Information Criteria (small sample size)}
 
 \deqn{\lambda_{AICc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 y^{\star

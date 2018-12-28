@@ -15,17 +15,19 @@ ensemble_kernel_matrix(A_est, eig_thres = 1e-11)
 \item{K_hat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 }
 \description{
-Calculating ensemble kernel matrix and truncating those 
-columns whose eigenvalues are smaller than the given threshold.
+Calculating ensemble kernel matrix and truncating those columns whose
+eigenvalues are smaller than the given threshold.
 }
 \details{
-After we obtain the ensemble projection matrix, we can calculate
-the ensemble kernel matrix.
+After we obtain the ensemble projection matrix, we can calculate the
+ensemble kernel matrix.
 }
 \examples{
 
 
+
 ensemble_kernel_matrix(A_hat[[2]], eig_thres = 1e-11)
+
 
 
 }

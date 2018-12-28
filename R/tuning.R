@@ -2,22 +2,38 @@
 #' 
 #' Calculate tuning parameters based on given criteria.
 #' 
-#' There are four tuning parameter selections here:
+#' There are seven tuning parameter selections here:
 #' 
 #' \bold{leave-one-out Cross Validation}
 #' 
 #' \deqn{\lambda_{n-CV}=\underset{\lambda \in
 #' \Lambda}{argmin}\;\Big\{log\;y^{\star
-#' T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}y^\star
-#' \Big\}}
+#' T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-
+#' \frac{1}{n}I]^{-1}y^\star \Big\}}
 #' 
 #' \bold{Akaike Information Criteria}
+#' 
+#' \deqn{\lambda_{AIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n}\Big\}}
+#' 
+#' \bold{Akaike Information Criteria (small sample size)}
 #' 
 #' \deqn{\lambda_{AICc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 #' y^{\star
 #' T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n-tr(A_\lambda)-3}\Big\}}
 #' 
+#' \bold{Bayesian Information Criteria}
+#' 
+#' \deqn{\lambda_{BIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
+#' 
 #' \bold{Generalized Cross Validation}
+#' 
+#' \deqn{\lambda_{GCV}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+#' y^{\star
+#' T}(I-A_\lambda)^2y^\star-2log[1-\frac{tr(A_\lambda)}{n}-\frac{1}{n}]_+\Big\}}
+#' 
+#' \bold{Generalized Cross Validation (small sample size)}
 #' 
 #' \deqn{\lambda_{GCVc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 #' y^{\star
@@ -30,11 +46,13 @@
 #' \Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param mode  (character) A character string indicating which tuning 
-#' parameter criteria is to be used.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param mode (character) A character string indicating which tuning parameter
+#' criteria is to be used.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -59,18 +77,20 @@
 #' @examples
 #' 
 #' 
-#' lambda0 <- tuning(Y, K_mat = K_hat, 
-#' mode = "loocv", lambda = exp(seq(-5, 5)))
+#' 
+#' lambda0 <- tuning(Y, X, K_mat = K_ens, 
+#' mode = "loocv", lambda = exp(seq(-10, 5)))
+#' 
 #' 
 #' 
 #' @export tuning
-
 tuning <-
-  function(Y, K_mat, mode, lambda) {
+  function(Y, X, K_mat, mode, lambda) {
     
     mode <- match.arg(mode, c("AIC", "AICc", "BIC", "GCV", "GCVc", "gmpml", "loocv"))
     func_name <- paste0("tuning_", mode)
-    lambda_selected <- do.call(func_name, list(Y = Y, K_mat = K_mat, lambda = lambda))
+    lambda_selected <- do.call(func_name, 
+                               list(Y = Y, X = X, K_mat = K_mat, lambda = lambda))
     if (length(lambda_selected) != 1) {
       warning(paste0("Multiple (", length(lambda_selected), 
                      ") optimal lambda's found, returning the smallest one."))
@@ -80,6 +100,8 @@ tuning <-
   }
 
 
+
+
 #' Calculating Tuning Parameters Using AIC
 #' 
 #' Calculate tuning parameters based on AIC.
@@ -87,13 +109,14 @@ tuning <-
 #' \bold{Akaike Information Criteria}
 #' 
 #' \deqn{\lambda_{AIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
-#' y^{\star
-#' T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n}\Big\}}
+#' y^{\star T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n}\Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -115,16 +138,15 @@ tuning <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_AIC
 tuning_AIC <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
@@ -135,20 +157,24 @@ tuning_AIC <-
   }
 
 
+
+
 #' Calculating Tuning Parameters Using AICc
 #' 
 #' Calculate tuning parameters based on AICc.
 #' 
-#' \bold{Akaike Information Criteria}
+#' \bold{Akaike Information Criteria (small sample size)}
 #' 
 #' \deqn{\lambda_{AICc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 #' y^{\star
 #' T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n-tr(A_\lambda)-3}\Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -170,16 +196,15 @@ tuning_AIC <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_AICc
 tuning_AICc <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k) {
 
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
@@ -190,20 +215,23 @@ tuning_AICc <-
   }
 
 
+
+
 #' Calculating Tuning Parameters Using BIC
 #' 
 #' Calculate tuning parameters based on BIC.
 #' 
-#' \bold{Akaike Information Criteria}
+#' \bold{Bayesian Information Criteria}
 #' 
 #' \deqn{\lambda_{BIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
-#' y^{\star
-#' T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
+#' y^{\star T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -225,16 +253,15 @@ tuning_AICc <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_BIC
 tuning_BIC <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
@@ -243,6 +270,8 @@ tuning_BIC <-
     
     lambda[which(CV == min(CV))]
   }
+
+
 
 
 #' Calculating Tuning Parameters Using GCV
@@ -256,9 +285,11 @@ tuning_BIC <-
 #' T}(I-A_\lambda)^2y^\star-2log[1-\frac{tr(A_\lambda)}{n}-\frac{1}{n}]_+\Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -280,16 +311,15 @@ tuning_BIC <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_GCV
 tuning_GCV <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
@@ -302,20 +332,24 @@ tuning_GCV <-
 
 
 
+
+
 #' Calculating Tuning Parameters Using GCVc
 #' 
 #' Calculate tuning parameters based on GCVc.
 #' 
-#' \bold{Generalized Cross Validation}
+#' \bold{Generalized Cross Validation (small sample size)}
 #' 
 #' \deqn{\lambda_{GCVc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 #' y^{\star
 #' T}(I-A_\lambda)^2y^\star-2log[1-\frac{tr(A_\lambda)}{n}-\frac{2}{n}]_+\Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -337,16 +371,15 @@ tuning_GCV <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_GCVc
 tuning_GCVc <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
@@ -359,9 +392,12 @@ tuning_GCVc <-
 
 
 
+
+
 #' Calculating Tuning Parameters Using GMPML
 #' 
-#' Calculate tuning parameters based on Generalized Maximum Profile Marginal Likelihood.
+#' Calculate tuning parameters based on Generalized Maximum Profile Marginal
+#' Likelihood.
 #' 
 #' \bold{Generalized Maximum Profile Marginal Likelihood}
 #' 
@@ -370,9 +406,11 @@ tuning_GCVc <-
 #' \Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -394,19 +432,18 @@ tuning_GCVc <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_gmpml
 tuning_gmpml <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k){
       
       A_kernel_only <- K_mat %*% ginv(K_mat + k * diag(n))
       log_det <- unlist(determinant(diag(n) - A_kernel_only), 
                         use.names = FALSE)[1]
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% Y) - 1 / (n - 1) * log_det
@@ -414,6 +451,8 @@ tuning_gmpml <-
     
     lambda[which(CV == min(CV))]
   }
+
+
 
 
 
@@ -425,13 +464,15 @@ tuning_gmpml <-
 #' 
 #' \deqn{\lambda_{n-CV}=\underset{\lambda \in
 #' \Lambda}{argmin}\;\Big\{log\;y^{\star
-#' T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}y^\star
-#' \Big\}}
+#' T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-
+#' \frac{1}{n}I]^{-1}y^\star \Big\}}
 #' 
 #' @param Y (vector of length n) Reponses of the dataframe.
+#' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
+#' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise 
-#' to be chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of noise to be
+#' chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -453,15 +494,14 @@ tuning_gmpml <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' 
 #' @export tuning_loocv
 tuning_loocv <-
-  function(Y, K_mat, lambda) {
+  function(Y, X, K_mat, lambda) {
     
-    n <- nrow(K_mat)
+    n <- length(Y)
     CV <- sapply(lambda, function(k) {
       proj_matrix <- 
-        estimate_ridge(X = matrix(1, nrow = n, ncol = 1),
+        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
                        K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       

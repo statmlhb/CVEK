@@ -2,23 +2,23 @@
 % Please edit documentation in R/generate_kernel.R
 \name{kernel_rbf}
 \alias{kernel_rbf}
-\title{Generating A Single vector-wise Function Using RBF}
+\title{Generating A Single Matrix-wise Function Using RBF}
 \usage{
-kernel_rbf(l, p)
+kernel_rbf(l, d)
 }
 \arguments{
-\item{l}{(numeric) A numeric number indicating the hyperparameter 
+\item{l}{(numeric) A numeric number indicating the hyperparameter
 (flexibility) of a specific kernel.}
 
-\item{p}{(integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
-rational, alpha = p.}
+\item{d}{(integer) For polynomial, d is the power; for matern, v = d + 1 /
+2; for rational, alpha = d.}
 }
 \value{
-\item{vector_wise}{(function) A function calculating 
-the relevance of two vectors.}
+\item{matrix_wise}{(function) A function calculating the relevance
+of two matrices.}
 }
 \description{
-Generate vector-wise functions for two vectors using rbf kernel.
+Generate matrix-wise functions for two matrices using rbf kernel.
 }
 \details{
 \bold{Gaussian RBF Kernels} \deqn{k_{SE}(r)=exp\Big(-\frac{r^2}{2l^2}\Big)}

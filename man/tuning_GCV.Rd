@@ -4,15 +4,18 @@
 \alias{tuning_GCV}
 \title{Calculating Tuning Parameters Using GCV}
 \usage{
-tuning_GCV(Y, K_mat, lambda)
+tuning_GCV(Y, X, K_mat, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
-to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise to be
+chosen. The lower limit of lambda must be above 0.}
 }
 \value{
 \item{lambda0}{(numeric) The estimated tuning parameter.}

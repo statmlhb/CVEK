@@ -4,18 +4,21 @@
 \alias{tuning}
 \title{Calculating Tuning Parameters}
 \usage{
-tuning(Y, K_mat, mode, lambda)
+tuning(Y, X, K_mat, mode, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{mode}{(character) A character string indicating which tuning 
-parameter criteria is to be used.}
+\item{mode}{(character) A character string indicating which tuning parameter
+criteria is to be used.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
-to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise to be
+chosen. The lower limit of lambda must be above 0.}
 }
 \value{
 \item{lambda0}{(numeric) The estimated tuning parameter.}
@@ -24,22 +27,38 @@ to be chosen. The lower limit of lambda must be above 0.}
 Calculate tuning parameters based on given criteria.
 }
 \details{
-There are four tuning parameter selections here:
+There are seven tuning parameter selections here:
 
 \bold{leave-one-out Cross Validation}
 
 \deqn{\lambda_{n-CV}=\underset{\lambda \in
 \Lambda}{argmin}\;\Big\{log\;y^{\star
-T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}y^\star
-\Big\}}
+T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-
+\frac{1}{n}I]^{-1}y^\star \Big\}}
 
 \bold{Akaike Information Criteria}
+
+\deqn{\lambda_{AIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+y^{\star T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n}\Big\}}
+
+\bold{Akaike Information Criteria (small sample size)}
 
 \deqn{\lambda_{AICc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 y^{\star
 T}(I-A_\lambda)^2y^\star+\frac{2[tr(A_\lambda)+2]}{n-tr(A_\lambda)-3}\Big\}}
 
+\bold{Bayesian Information Criteria}
+
+\deqn{\lambda_{BIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+y^{\star T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
+
 \bold{Generalized Cross Validation}
+
+\deqn{\lambda_{GCV}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
+y^{\star
+T}(I-A_\lambda)^2y^\star-2log[1-\frac{tr(A_\lambda)}{n}-\frac{1}{n}]_+\Big\}}
+
+\bold{Generalized Cross Validation (small sample size)}
 
 \deqn{\lambda_{GCVc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 y^{\star
@@ -54,8 +73,10 @@ y^{\star T}(I-A_\lambda)y^\star-\frac{1}{n-1}log \mid I-A_\lambda \mid
 \examples{
 
 
-lambda0 <- tuning(Y, K_mat = K_hat, 
-mode = "loocv", lambda = exp(seq(-5, 5)))
+
+lambda0 <- tuning(Y, X, K_mat = K_ens, 
+mode = "loocv", lambda = exp(seq(-10, 5)))
+
 
 
 }
