@@ -4,7 +4,7 @@
 #' 
 #' There are three ensemble strategies available here:
 #' 
-#' \bold{Empirical Risk Minimization}
+#' \bold{Empirical Risk Minimization (Stacking)}
 #' 
 #' After obtaining the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}, we
 #' estimate the ensemble weights \eqn{u=\{u_d\}_{d=1}^D} such that it minimizes
@@ -30,23 +30,23 @@
 #' \parallel_2^2/\beta)}}
 #' 
 #' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, =K) A numeric number specifying the number of 
-#' kernels in the kernel library.
-#' @param strategy (character) A character string indicating which ensemble 
+#' @param kern_size (integer, equals to K) A numeric number specifying the
+#' number of kernels in the kernel library.
+#' @param strategy (character) A character string indicating which ensemble
 #' strategy is to be used.
-#' @param beta (numeric/character) A numeric value specifying the parameter when 
-#' strategy = "exp" \code{\link{ensemble_exp}}.
-#' @param error_mat (matrix, n*K) A n\*kern_size matrix indicating errors.
-#' @param A_hat (list of length K) A list of projection matrices for 
-#' every kernels in the kernel library.
+#' @param beta_exp (numeric/character) A numeric value specifying the parameter
+#' when strategy = "exp" \code{\link{ensemble_exp}}.
+#' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
+#' @param A_hat (list of length K) A list of projection matrices for each
+#' kernel in the kernel library.
 #' @return \item{A_est}{(matrix, n*n) A list of estimated kernel matrices.}
 #' 
-#' \item{u_hat}{(vector of length K) A vector of weights of the kernels 
-#' in the library.}
+#' \item{u_hat}{(vector of length K) A vector of weights of the kernels in the
+#' library.}
 #' @author Wenying Deng
 #' @seealso mode: \code{\link{tuning}}
 #' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-#' Nonlinear Effect with Gaus- sian Processes. October 2017.
+#' Nonlinear Effect with Gaussian Processes. October 2017.
 #' 
 #' Xiang Zhan, Anna Plantinga, Ni Zhao, and Michael C. Wu. A fast small-sample
 #' kernel inde- pendence test for microbiome community-level association
@@ -58,30 +58,32 @@
 #' @examples
 #' 
 #' 
-#' ensemble(n = 100, kern_size = 3, strategy = "erm", beta = 1, 
+#' 
+#' ensemble(n = 100, kern_size = 3, strategy = "stack", beta_exp = 1, 
 #' error_mat, A_hat)
 #' 
 #' 
+#' 
 #' @export ensemble
-
 ensemble <-
-  function(n, kern_size, strategy, beta, error_mat, A_hat) {
+  function(n, kern_size, strategy, beta_exp, error_mat, A_hat) {
     
-    strategy <- match.arg(strategy, c("avg", "exp", "erm"))
+    strategy <- match.arg(strategy, c("avg", "exp", "stack"))
     func_name <- paste0("ensemble_", strategy)
     
-    do.call(func_name, list(n = n, kern_size = kern_size, beta = beta,
+    do.call(func_name, list(n = n, kern_size = kern_size, beta_exp = beta_exp,
                             error_mat = error_mat, A_hat = A_hat))
   }
 
 
 
-#' Estimating Ensemble Kernel Matrices Using ERM
+
+
+#' Estimating Ensemble Kernel Matrices Using Stack
 #' 
-#' Give a list of estimated kernel matrices and their weights using 
-#' empirical risk minimization.
+#' Give a list of estimated kernel matrices and their weights using stacking.
 #' 
-#' \bold{Empirical Risk Minimization}
+#' \bold{Empirical Risk Minimization (Stacking)}
 #' 
 #' After obtaining the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}, we
 #' estimate the ensemble weights \eqn{u=\{u_d\}_{d=1}^D} such that it minimizes
@@ -93,21 +95,21 @@ ensemble <-
 #' A_{d,\hat{\lambda}_d}} is the ensemble matrix.
 #' 
 #' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, =K) A numeric number specifying the number of 
-#' kernels in the kernel library.
-#' @param beta (numeric/character) A numeric value specifying the parameter when 
-#' strategy = "exp" \code{\link{ensemble_exp}}.
-#' @param error_mat (matrix, n*K) A n\*kern_size matrix indicating errors.
-#' @param A_hat (list of length K) A list of projection matrices for 
-#' every kernels in the kernel library.
+#' @param kern_size (integer, equals to K) A numeric number specifying the
+#' number of kernels in the kernel library.
+#' @param beta_exp (numeric/character) A numeric value specifying the parameter
+#' when strategy = "exp" \code{\link{ensemble_exp}}.
+#' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
+#' @param A_hat (list of length K) A list of projection matrices for each
+#' kernel in the kernel library.
 #' @return \item{A_est}{(matrix, n*n) A list of estimated kernel matrices.}
 #' 
-#' \item{u_hat}{(vector of length K) A vector of weights of the kernels 
-#' in the library.}
+#' \item{u_hat}{(vector of length K) A vector of weights of the kernels in the
+#' library.}
 #' @author Wenying Deng
 #' @seealso mode: \code{\link{tuning}}
 #' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-#' Nonlinear Effect with Gaus- sian Processes. October 2017.
+#' Nonlinear Effect with Gaussian Processes. October 2017.
 #' 
 #' Xiang Zhan, Anna Plantinga, Ni Zhao, and Michael C. Wu. A fast small-sample
 #' kernel inde- pendence test for microbiome community-level association
@@ -116,10 +118,8 @@ ensemble <-
 #' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
-#' 
-#' @export ensemble_erm
-ensemble_erm <- 
-  function(n, kern_size, beta, error_mat, A_hat) {
+ensemble_stack <- 
+  function(n, kern_size, beta_exp, error_mat, A_hat) {
     
     A <- error_mat
     B <- rep(0, n)
@@ -139,10 +139,12 @@ ensemble_erm <-
   }
 
 
+
+
 #' Estimating Ensemble Kernel Matrices Using AVG
 #' 
-#' Give a list of estimated kernel matrices and their weights using 
-#' simple averaging.
+#' Give a list of estimated kernel matrices and their weights using simple
+#' averaging.
 #' 
 #' \bold{Simple Averaging}
 #' 
@@ -151,21 +153,21 @@ ensemble_erm <-
 #' \eqn{u_d=1/D} for \eqn{d=1,2,...D}.
 #' 
 #' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, =K) A numeric number specifying the number of 
-#' kernels in the kernel library.
-#' @param beta (numeric/character) A numeric value specifying the parameter when 
-#' strategy = "exp" \code{\link{ensemble_exp}}.
-#' @param error_mat (matrix, n*K) A n\*kern_size matrix indicating errors.
-#' @param A_hat (list of length K) A list of projection matrices for 
-#' every kernels in the kernel library.
+#' @param kern_size (integer, equals to K) A numeric number specifying the
+#' number of kernels in the kernel library.
+#' @param beta_exp (numeric/character) A numeric value specifying the parameter
+#' when strategy = "exp" \code{\link{ensemble_exp}}.
+#' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
+#' @param A_hat (list of length K) A list of projection matrices for each
+#' kernel in the kernel library.
 #' @return \item{A_est}{(matrix, n*n) A list of estimated kernel matrices.}
 #' 
-#' \item{u_hat}{(vector of length K) A vector of weights of the kernels 
-#' in the library.}
+#' \item{u_hat}{(vector of length K) A vector of weights of the kernels in the
+#' library.}
 #' @author Wenying Deng
 #' @seealso mode: \code{\link{tuning}}
 #' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-#' Nonlinear Effect with Gaus- sian Processes. October 2017.
+#' Nonlinear Effect with Gaussian Processes. October 2017.
 #' 
 #' Xiang Zhan, Anna Plantinga, Ni Zhao, and Michael C. Wu. A fast small-sample
 #' kernel inde- pendence test for microbiome community-level association
@@ -174,10 +176,8 @@ ensemble_erm <-
 #' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
-#' 
-#' @export ensemble_avg
 ensemble_avg <- 
-  function(n, kern_size, beta, error_mat, A_hat) {
+  function(n, kern_size, beta_exp, error_mat, A_hat) {
     
     u_hat <- rep(1 / kern_size, kern_size)
     A_est <- (1 / kern_size) * A_hat[[1]]
@@ -192,10 +192,12 @@ ensemble_avg <-
 
 
 
+
+
 #' Estimating Ensemble Kernel Matrices Using EXP
 #' 
-#' Give a list of estimated kernel matrices and their weights using
-#' exponential weighting.
+#' Give a list of estimated kernel matrices and their weights using exponential
+#' weighting.
 #' 
 #' \bold{Exponential Weighting}
 #' 
@@ -205,29 +207,29 @@ ensemble_avg <-
 #' \parallel_2^2/\beta)}{\sum_{d=1}^Dexp(-\parallel \hat{\epsilon}_d
 #' \parallel_2^2/\beta)}}
 #' 
-#' \bold{beta}
+#' \bold{beta_exp}
 #' 
-#' The value of beta can be "min"=\eqn{min\{RSS\}_{d=1}^D/10},
-#' "med"=\eqn{median\{RSS\}_{d=1}^D}, "max"=\eqn{max\{RSS\}_{d=1}^D*2}
-#' and any other positive numeric number, where \eqn{\{RSS\} _{d=1}^D}
-#' are the set of residual sum of squares of \eqn{D} base kernels.
+#' The value of beta_exp can be "min"=\eqn{min\{RSS\}_{d=1}^D/10},
+#' "med"=\eqn{median\{RSS\}_{d=1}^D}, "max"=\eqn{max\{RSS\}_{d=1}^D*2} and any
+#' other positive numeric number, where \eqn{\{RSS\} _{d=1}^D} are the set of
+#' residual sum of squares of \eqn{D} base kernels.
 #' 
 #' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, =K) A numeric number specifying the number of 
-#' kernels in the kernel library.
-#' @param beta (numeric/character) A numeric value specifying the parameter 
+#' @param kern_size (integer, equals to K) A numeric number specifying the
+#' number of kernels in the kernel library.
+#' @param beta_exp (numeric/character) A numeric value specifying the parameter
 #' when strategy = "exp". See Details.
-#' @param error_mat (matrix, n*K) A n\*kern_size matrix indicating errors.
-#' @param A_hat (list of length K) A list of projection matrices for 
-#' every kernels in the kernel library.
+#' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
+#' @param A_hat (list of length K) A list of projection matrices for each
+#' kernel in the kernel library.
 #' @return \item{A_est}{(matrix, n*n) A list of estimated kernel matrices.}
 #' 
-#' \item{u_hat}{(vector of length K) A vector of weights of the kernels 
-#' in the library.}
+#' \item{u_hat}{(vector of length K) A vector of weights of the kernels in the
+#' library.}
 #' @author Wenying Deng
 #' @seealso mode: \code{\link{tuning}}
 #' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-#' Nonlinear Effect with Gaus- sian Processes. October 2017.
+#' Nonlinear Effect with Gaussian Processes. October 2017.
 #' 
 #' Xiang Zhan, Anna Plantinga, Ni Zhao, and Michael C. Wu. A fast small-sample
 #' kernel inde- pendence test for microbiome community-level association
@@ -236,17 +238,15 @@ ensemble_avg <-
 #' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
-#' 
-#' @export ensemble_exp
 ensemble_exp <- 
-  function(n, kern_size, beta, error_mat, A_hat) {
+  function(n, kern_size, beta_exp, error_mat, A_hat) {
     
     A <- error_mat
-    if (beta == "med") {
+    if (beta_exp == "med") {
       beta <- median(apply(A, 2, function(x) sum(x ^ 2)))
-    } else if (beta == "min") {
+    } else if (beta_exp == "min") {
       beta <- min(apply(A, 2, function(x) sum(x ^ 2))) / 10
-    } else if (beta == "max") {
+    } else if (beta_exp == "max") {
       beta <- max(apply(A, 2, function(x) sum(x ^ 2))) * 2
     }
     u_hat <- apply(A, 2, function(x) {

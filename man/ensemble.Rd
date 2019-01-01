@@ -4,30 +4,30 @@
 \alias{ensemble}
 \title{Estimating Ensemble Kernel Matrices}
 \usage{
-ensemble(n, kern_size, strategy, beta, error_mat, A_hat)
+ensemble(n, kern_size, strategy, beta_exp, error_mat, A_hat)
 }
 \arguments{
 \item{n}{(integer) A numeric number specifying the number of observations.}
 
-\item{kern_size}{(integer, =K) A numeric number specifying the number of 
-kernels in the kernel library.}
+\item{kern_size}{(integer, equals to K) A numeric number specifying the
+number of kernels in the kernel library.}
 
-\item{strategy}{(character) A character string indicating which ensemble 
+\item{strategy}{(character) A character string indicating which ensemble
 strategy is to be used.}
 
-\item{beta}{(numeric/character) A numeric value specifying the parameter when 
-strategy = "exp" \code{\link{ensemble_exp}}.}
+\item{beta_exp}{(numeric/character) A numeric value specifying the parameter
+when strategy = "exp" \code{\link{ensemble_exp}}.}
 
-\item{error_mat}{(matrix, n*K) A n\*kern_size matrix indicating errors.}
+\item{error_mat}{(matrix, n*K) A n\*K matrix indicating errors.}
 
-\item{A_hat}{(list of length K) A list of projection matrices for 
-every kernels in the kernel library.}
+\item{A_hat}{(list of length K) A list of projection matrices for each
+kernel in the kernel library.}
 }
 \value{
 \item{A_est}{(matrix, n*n) A list of estimated kernel matrices.}
 
-\item{u_hat}{(vector of length K) A vector of weights of the kernels 
-in the library.}
+\item{u_hat}{(vector of length K) A vector of weights of the kernels in the
+library.}
 }
 \description{
 Give a list of estimated kernel matrices and their weights.
@@ -35,7 +35,7 @@ Give a list of estimated kernel matrices and their weights.
 \details{
 There are three ensemble strategies available here:
 
-\bold{Empirical Risk Minimization}
+\bold{Empirical Risk Minimization (Stacking)}
 
 After obtaining the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}, we
 estimate the ensemble weights \eqn{u=\{u_d\}_{d=1}^D} such that it minimizes
@@ -63,14 +63,16 @@ based on the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}.
 \examples{
 
 
-ensemble(n = 100, kern_size = 3, strategy = "erm", beta = 1, 
+
+ensemble(n = 100, kern_size = 3, strategy = "stack", beta_exp = 1, 
 error_mat, A_hat)
+
 
 
 }
 \references{
 Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-Nonlinear Effect with Gaus- sian Processes. October 2017.
+Nonlinear Effect with Gaussian Processes. October 2017.
 
 Xiang Zhan, Anna Plantinga, Ni Zhao, and Michael C. Wu. A fast small-sample
 kernel inde- pendence test for microbiome community-level association

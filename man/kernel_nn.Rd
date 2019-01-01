@@ -2,28 +2,28 @@
 % Please edit documentation in R/generate_kernel.R
 \name{kernel_nn}
 \alias{kernel_nn}
-\title{Generating A Single vector-wise Function Using Neural Network}
+\title{Generating A Single Matrix-wise Function Using Neural Network}
 \usage{
-kernel_nn(l, p)
+kernel_nn(l, d)
 }
 \arguments{
-\item{l}{(numeric) A numeric number indicating the hyperparameter 
+\item{l}{(numeric) A numeric number indicating the hyperparameter
 (flexibility) of a specific kernel.}
 
-\item{p}{(integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
-rational, alpha = p.}
+\item{d}{(integer) For polynomial, d is the power; for matern, v = d + 1 /
+2; for rational, alpha = d.}
 }
 \value{
-\item{vector_wise}{(function) A function calculating 
-the relevance of two vectors.}
+\item{matrix_wise}{(function) A function calculating the relevance
+of two matrices.}
 }
 \description{
-Generate vector-wise functions for two vectors using neural network kernel.
+Generate matrix-wise functions for two matrices using neural network kernel.
 }
 \details{
 \bold{Neural Network Kernels} \deqn{k_{NN}(x,
 x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T
-\tilde{x}'}{\sqrt{(1+2\tilde{x}^T\tilde{x})(1+2\tilde{x}'^T
+\tilde{x}'}{\sqrt{(1+2\tilde{x}^T \tilde{x})(1+2\tilde{x}'^T
 \tilde{x}')}}\Big)}
 }
 \references{

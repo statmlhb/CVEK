@@ -4,45 +4,53 @@
 \alias{generate_data}
 \title{Generating Original Data}
 \usage{
-generate_data(n, label_names, method = "rbf", Sigma = 0, l = 1, p = 2,
-  int_effect = 0, eps = 0.01)
+generate_data(n, fixed_num = 1, label_names = NULL, method = "rbf",
+  l = 1, d = 2, int_effect = 0, eps = 0.01)
 }
 \arguments{
 \item{n}{(integer) A numeric number specifying the number of observations.}
 
-\item{label_names}{(list) A character string indicating all the interior 
-variables included in each predictor.}
+\item{fixed_num}{(integer) A numeric number specifying the dimension of
+fixed effects.}
 
-\item{method}{(character) A character string indicating which kernel is 
-to be computed.}
+\item{label_names}{(list) A character string indicating all the interior
+variables included in each group of random effects.}
 
-\item{l}{(numeric) A numeric number indicating the hyperparameter 
+\item{method}{(character) A character string indicating which kernel is to
+be computed.}
+
+\item{l}{(numeric) A numeric number indicating the hyperparameter
 (flexibility) of a specific kernel.}
 
-\item{p}{(integer) For polynomial, p is the power; for matern, v = p + 1 / 2; 
-for rational, alpha = p.}
+\item{d}{(integer) For polynomial, d is the power; for matern, v = d + 1 /
+2; for rational, alpha = d.}
 
-\item{int_effect}{(numeric) A numeric number specifying the size of interaction.}
+\item{int_effect}{(numeric) A numeric number specifying the size of
+interaction.}
 
-\item{eps}{(numeric) A numeric number indicating the size of noise.}
+\item{eps}{(numeric) A numeric number indicating the size of noise of fixed
+effects.}
 }
 \value{
-\item{data}{(dataframe, n*P) A dataframe to be fitted.}
+\item{data}{(dataframe, n*(p+q)) A dataframe to be fitted.}
 }
 \description{
 Generate original data based on specific kernels.
 }
 \details{
-This function generates with a specific kernel. The argument int_effect
-represents the strength of interaction relative to the main effect since all
-sampled functions have been standardized to have unit norm.
+This function generates with a specific dataset. The argument int_effect
+represents the strength of interaction of random effects relative to the
+main random effects since all sampled functions have been standardized to
+have unit norm.
 }
 \examples{
 
 
-data <- generate_data(n = 100, label_names =
-list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
-method = "rbf", int_effect = 0, l = 1, p = 2, eps = .01)
+
+mydata <- generate_data(n = 100, fixed_num = 1, label_names =
+list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")),
+method = "rbf", l = 1, d = 2, int_effect = 0, eps = .01)
+
 
 
 }

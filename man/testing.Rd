@@ -4,51 +4,54 @@
 \alias{testing}
 \title{Conducting Score Tests for Interaction}
 \usage{
-testing(formula_int, label_names, Y, X1, X2, kern_list, mode = "loocv",
-  strategy = "erm", beta = 1, test = "boot", lambda = exp(seq(-10, 5)),
-  B = 100)
+testing(formula_int, label_names, Y, X, Z1, Z2, kern_list, mode = "loocv",
+  strategy = "stack", beta_exp = 1, test = "boot", lambda = exp(seq(-10,
+  5)), B = 100)
 }
 \arguments{
-\item{formula_int}{(formula) A symbolic description of the model with 
+\item{formula_int}{(formula) A symbolic description of the model with
 interaction.}
 
-\item{label_names}{(list) A character string indicating all the interior 
-variables included in each predictor.}
+\item{label_names}{(list) A character string indicating all the interior
+variables included in each group of random effect. See Details.}
 
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X1}{(dataframe, n*p1) The first type of factor in the dataframe (could 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{X2}{(dataframe, n*p2) The second type of factor in the dataframe (could 
-contains several subfactors).}
+\item{Z1}{(dataframe, n*q1) The first group of random effects variables in
+the dataframe (could contains several subfactors).}
 
-\item{kern_list}{(list of length K) A list of kernel functions given by user.}
+\item{Z2}{(dataframe, n*q2) The second group of random effects variables in
+the dataframe (could contains several subfactors).}
 
-\item{mode}{(character) A character string indicating which tuning 
-parameter criteria is to be used.}
+\item{kern_list}{(list of length K) A list of kernel functions given by
+user.}
 
-\item{strategy}{(character) A character string indicating which ensemble 
+\item{mode}{(character) A character string indicating which tuning parameter
+criteria is to be used.}
+
+\item{strategy}{(character) A character string indicating which ensemble
 strategy is to be used.}
 
-\item{beta}{(numeric/character) A numeric value specifying the parameter 
+\item{beta_exp}{(numeric/character) A numeric value specifying the parameter
 when strategy = "exp" \code{\link{ensemble_exp}}.}
 
-\item{test}{(character) A character string indicating which test is 
-to be used.}
+\item{test}{(character) A character string indicating which test is to be
+used.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of 
-noise to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
+to be chosen. The lower limit of lambda must be above 0.}
 
-\item{B}{(integer) A numeric value indicating times of resampling w
-hen test = "boot".}
+\item{B}{(integer) A numeric value indicating times of resampling when test
+= "boot".}
 }
 \value{
 \item{pvalue}{(numeric) p-value of the test.}
-\item{lambda}{(numeric) The selected tuning parameter based on the 
-estimated ensemble kernel matrix.}
-\item{u_hat}{(vector of length K) A vector of weights of the kernels in 
-the library.}
+\item{lambda}{(numeric) The selected tuning parameter based on the estimated
+ensemble kernel matrix.} \item{u_hat}{(vector of length K) A vector of
+weights of the kernels in the library.}
 }
 \description{
 Conduct score tests comparing a fitted model and a more general alternative
@@ -71,10 +74,12 @@ computational effort to a permutation test.
 \examples{
 
 
-testing(formula_int = Y ~ X1 * X2,
-label_names = list(X1 = c("x1", "x2"), X2 = c("x3", "x4")),
-Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-beta = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
+
+testing(formula_int = Y ~ X + Z1 * Z2,
+label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")),
+Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
+beta_exp = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
+
 
 
 }

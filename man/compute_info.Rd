@@ -9,13 +9,13 @@ compute_info(P0_mat, mat_del = NULL, mat_sigma2 = NULL, mat_tau = NULL)
 \arguments{
 \item{P0_mat}{(matrix, n*n) Scale projection matrix under REML.}
 
-\item{mat_del}{(matrix, n*n) Derivative of the scale covariance matrix of Y 
+\item{mat_del}{(matrix, n*n) Derivative of the scale covariance matrix of Y
 with respect to delta.}
 
-\item{mat_sigma2}{(matrix, n*n) Derivative of the scale covariance matrix 
-of Y with respect to sigma2.}
+\item{mat_sigma2}{(matrix, n*n) Derivative of the scale covariance matrix of
+Y with respect to sigma2.}
 
-\item{mat_tau}{(matrix, n*n) Derivative of the scale covariance matrix of Y 
+\item{mat_tau}{(matrix, n*n) Derivative of the scale covariance matrix of Y
 with respect to tau.}
 }
 \value{
@@ -30,8 +30,10 @@ This function gives the information value of the interaction strength.
 \examples{
 
 
+
 I0 <- compute_info(P0_mat, mat_del = drV0_del,
 mat_sigma2 = drV0_sigma2, mat_tau = drV0_tau)
+
 
 
 }

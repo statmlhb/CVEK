@@ -4,14 +4,17 @@
 \alias{tuning_BIC}
 \title{Calculating Tuning Parameters Using BIC}
 \usage{
-tuning_BIC(Y, K_mat, lambda)
+tuning_BIC(Y, X, K_mat, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
 to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
@@ -21,11 +24,10 @@ to be chosen. The lower limit of lambda must be above 0.}
 Calculate tuning parameters based on BIC.
 }
 \details{
-\bold{Akaike Information Criteria}
+\bold{Bayesian Information Criteria}
 
 \deqn{\lambda_{BIC}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
-y^{\star
-T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
+y^{\star T}(I-A_\lambda)^2y^\star+\frac{log(n)[tr(A_\lambda)+2]}{n}\Big\}}
 }
 \references{
 Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.

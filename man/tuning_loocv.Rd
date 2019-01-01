@@ -4,14 +4,17 @@
 \alias{tuning_loocv}
 \title{Calculating Tuning Parameters Using looCV}
 \usage{
-tuning_loocv(Y, K_mat, lambda)
+tuning_loocv(Y, X, K_mat, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
 to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
@@ -25,8 +28,8 @@ Calculate tuning parameters based on given leave-one-out Cross Validation.
 
 \deqn{\lambda_{n-CV}=\underset{\lambda \in
 \Lambda}{argmin}\;\Big\{log\;y^{\star
-T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}y^\star
-\Big\}}
+T}[I-diag(A_\lambda)-\frac{1}{n}I]^{-1}(I-A_\lambda)^2[I-diag(A_\lambda)-
+\frac{1}{n}I]^{-1}y^\star \Big\}}
 }
 \references{
 Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.

@@ -4,48 +4,52 @@
 \alias{estimation}
 \title{Conducting Gaussian Process Regression}
 \usage{
-estimation(Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-  beta = 1, lambda = exp(seq(-10, 5)))
+estimation(Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
+  beta_exp = 1, lambda = exp(seq(-10, 5)))
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{X1}{(dataframe, n*p1) The first type of factor in the dataframe (could 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{X2}{(dataframe, n*p2) The second type of factor in the dataframe (could 
-contains several subfactors).}
+\item{Z1}{(dataframe, n*q1) The first group of random effects variables in
+the dataframe (could contains several subfactors).}
 
-\item{kern_list}{(list of length K) A list of kernel functions given by user.}
+\item{Z2}{(dataframe, n*q2) The second group of random effects variables in
+the dataframe (could contains several subfactors).}
 
-\item{mode}{(character) A character string indicating which tuning 
-parameter criteria is to be used.}
+\item{kern_list}{(list of length K) A list of kernel functions given by
+user.}
 
-\item{strategy}{(character) A character string indicating which ensemble 
+\item{mode}{(character) A character string indicating which tuning parameter
+criteria is to be used.}
+
+\item{strategy}{(character) A character string indicating which ensemble
 strategy is to be used.}
 
-\item{beta}{(numeric/character) A numeric value specifying the parameter 
+\item{beta_exp}{(numeric/character) A numeric value specifying the parameter
 when strategy = "exp" \code{\link{ensemble_exp}}.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of 
-noise to be chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of noise to be
+chosen. The lower limit of lambda must be above 0.}
 }
 \value{
-\item{lambda}{(numeric) The selected tuning parameter based on the 
+\item{lambda}{(numeric) The selected tuning parameter based on the
 estimated ensemble kernel matrix.}
 
-\item{beta}{(numeric) Estimated bias of the model.}
+\item{beta}{(matrix, p*1) Fixed effects estimator of the model.}
 
-\item{alpha}{(vector of length n) Estimated coefficients of the estimated 
+\item{alpha}{(vector of length n) Random effects estimator of the estimated
 ensemble kernel matrix.}
 
 \item{K}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{u_hat}{(vector of length K) A vector of weights of the kernels in 
-the library.}
+\item{u_hat}{(vector of length K) A vector of weights of the kernels in the
+library.}
 
-\item{base_est}{(list of length 6) The detailed estimation results of 
-K kernels.}
+\item{base_est}{(list of length 6) The detailed estimation results of K
+kernels.}
 }
 \description{
 Conduct gaussian process regression based on the estimated ensemble kernel
@@ -58,8 +62,10 @@ gaussian process regression.
 \examples{
 
 
-estimation(Y, X1, X2, kern_list, mode = "loocv", strategy = "erm",
-beta = 1, lambda = exp(seq(-10, 5)))
+
+estimation(Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
+beta_exp = 1, lambda = exp(seq(-10, 5)))
+
 
 
 }

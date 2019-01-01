@@ -4,14 +4,17 @@
 \alias{tuning_GCVc}
 \title{Calculating Tuning Parameters Using GCVc}
 \usage{
-tuning_GCVc(Y, K_mat, lambda)
+tuning_GCVc(Y, X, K_mat, lambda)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
+\item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
+contains several subfactors).}
+
 \item{K_mat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise 
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
 to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
@@ -21,7 +24,7 @@ to be chosen. The lower limit of lambda must be above 0.}
 Calculate tuning parameters based on GCVc.
 }
 \details{
-\bold{Generalized Cross Validation}
+\bold{Generalized Cross Validation (small sample size)}
 
 \deqn{\lambda_{GCVc}=\underset{\lambda \in \Lambda}{argmin}\Big\{log\;
 y^{\star

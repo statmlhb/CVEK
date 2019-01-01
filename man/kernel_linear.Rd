@@ -2,27 +2,27 @@
 % Please edit documentation in R/generate_kernel.R
 \name{kernel_linear}
 \alias{kernel_linear}
-\title{Generating A Single vector-wise Function Using Linear}
+\title{Generating A Single Matrix-wise Function Using Linear}
 \usage{
-kernel_linear(l, p)
+kernel_linear(l, d)
 }
 \arguments{
-\item{l}{(numeric) A numeric number indicating the hyperparameter 
+\item{l}{(numeric) A numeric number indicating the hyperparameter
 (flexibility) of a specific kernel.}
 
-\item{p}{(integer) For polynomial, p is the power; for matern, v = p + 1 / 2; for
-rational, alpha = p.}
+\item{d}{(integer) For polynomial, d is the power; for matern, v = d + 1 /
+2; for rational, alpha = d.}
 }
 \value{
-\item{vector_wise}{(function) A function calculating 
-the relevance of two vectors.}
+\item{matrix_wise}{(function) A function calculating the relevance
+of two matrices.}
 }
 \description{
-Generate vector-wise functions for two vectors using linear kernel.
+Generate matrix-wise functions for two matrices using linear kernel.
 }
 \details{
-\bold{Polynomial Kernels} \deqn{k(x, x')=(x \cdot x')^p} We have intercept
-kernel when \eqn{p=0}, and linear kernel when \eqn{p=1}.
+\bold{Polynomial Kernels} \deqn{k(x, x')=(x \cdot x')^d} We have intercept
+kernel when \eqn{d=0}, and linear kernel when \eqn{d=1}.
 }
 \references{
 The MIT Press. Gaussian Processes for Machine Learning, 2006.
