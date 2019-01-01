@@ -51,8 +51,8 @@
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
 #' @param mode (character) A character string indicating which tuning parameter
 #' criteria is to be used.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -115,8 +115,8 @@ tuning <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -138,7 +138,6 @@ tuning <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_AIC
 tuning_AIC <-
   function(Y, X, K_mat, lambda) {
     
@@ -146,8 +145,7 @@ tuning_AIC <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / n
@@ -173,8 +171,8 @@ tuning_AIC <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -196,7 +194,6 @@ tuning_AIC <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_AICc
 tuning_AICc <-
   function(Y, X, K_mat, lambda) {
     
@@ -204,8 +201,7 @@ tuning_AICc <-
     CV <- sapply(lambda, function(k) {
 
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / (n - tr(A) - 3)
@@ -230,8 +226,8 @@ tuning_AICc <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -253,7 +249,6 @@ tuning_AICc <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_BIC
 tuning_BIC <-
   function(Y, X, K_mat, lambda) {
     
@@ -261,8 +256,7 @@ tuning_BIC <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         log(n) * (tr(A) + 2) / n
@@ -288,8 +282,8 @@ tuning_BIC <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -311,7 +305,6 @@ tuning_BIC <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_GCV
 tuning_GCV <-
   function(Y, X, K_mat, lambda) {
     
@@ -319,8 +312,7 @@ tuning_GCV <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
@@ -348,8 +340,8 @@ tuning_GCV <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -371,7 +363,6 @@ tuning_GCV <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_GCVc
 tuning_GCVc <-
   function(Y, X, K_mat, lambda) {
     
@@ -379,8 +370,7 @@ tuning_GCVc <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
@@ -409,8 +399,8 @@ tuning_GCVc <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -432,7 +422,6 @@ tuning_GCVc <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_gmpml
 tuning_gmpml <-
   function(Y, X, K_mat, lambda) {
     
@@ -443,8 +432,7 @@ tuning_gmpml <-
       log_det <- unlist(determinant(diag(n) - A_kernel_only), 
                         use.names = FALSE)[1]
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% Y) - 1 / (n - 1) * log_det
     })
@@ -471,8 +459,8 @@ tuning_gmpml <-
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K_mat (matrix, n*n) Estimated ensemble kernel matrix.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda0}{(numeric) The estimated tuning parameter.}
 #' @author Wenying Deng
 #' @references Philip S. Boonstra, Bhramar Mukherjee, and Jeremy M. G. Taylor.
@@ -494,15 +482,13 @@ tuning_gmpml <-
 #' Hurvich Clifford M., Simonoff Jeffrey S., and Tsai Chih-Ling. Smoothing
 #' parameter selection in nonparametric regression using an improved Akaike
 #' information criterion. January 2002.
-#' @export tuning_loocv
 tuning_loocv <-
   function(Y, X, K_mat, lambda) {
     
     n <- length(Y)
     CV <- sapply(lambda, function(k) {
       proj_matrix <- 
-        estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X),
-                       K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
       sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)

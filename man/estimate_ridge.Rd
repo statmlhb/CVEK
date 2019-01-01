@@ -14,8 +14,8 @@ contains several subfactors).}
 
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise to be
-chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
+to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
 \item{lambda}{(numeric) The selected tuning parameter based on the

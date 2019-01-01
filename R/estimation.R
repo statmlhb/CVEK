@@ -57,6 +57,10 @@ estimation <- function(Y, X, Z1, Z2, kern_list,
   # base model estimate
   n <- length(Y)
   kern_size <- length(kern_list)
+  
+  if(sum(X[, 1] == 1) != n) {
+    X <- cbind(matrix(1, nrow = n, ncol = 1), X)
+  }
   base_est <- estimate_base(n, kern_size, Y, X, Z1, Z2, kern_list, 
                             mode, lambda)
   
@@ -70,8 +74,7 @@ estimation <- function(Y, X, Z1, Z2, kern_list,
   
   # final estimate
   lambda_ens <- tuning(Y, X, K_ens, mode, lambda)
-  ens_est <- estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X), 
-                            K = K_ens, Y = Y, lambda = lambda_ens)
+  ens_est <- estimate_ridge(X = X, K = K_ens, Y = Y, lambda = lambda_ens)
   list(lambda = lambda_ens, beta = ens_est$beta, 
        alpha = ens_est$alpha, K = K_ens, 
        u_hat = ens_res$u_hat, base_est = base_est)
@@ -128,10 +131,6 @@ estimation <- function(Y, X, Z1, Z2, kern_list,
 #' 
 #' estimate_base(n = 100, kern_size = 3, Y, X, Z1, Z2, kern_list,
 #' mode = "loocv", lambda = exp(seq(-10, 5)))
-#' 
-#' 
-#' 
-#' @export estimate_base
 estimate_base <- function(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda){
   A_hat <- list()
   P_K_hat <- list()
@@ -150,8 +149,7 @@ estimate_base <- function(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda){
     
     if (length(lambda) != 0) {
       lambda0 <- tuning(Y, X, K, mode, lambda)
-      estimate <- estimate_ridge(X = cbind(matrix(1, nrow = n, ncol = 1), X), 
-                                 K = K, Y = Y, lambda = lambda0)
+      estimate <- estimate_ridge(X = X, K = K, Y = Y, lambda = lambda0)
       A <- estimate$proj_matrix$total
       
       # produce loocv error matrix
@@ -185,8 +183,8 @@ estimate_base <- function(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda){
 #' contains several subfactors).
 #' @param K (matrix, n*n) Kernel matrix.
 #' @param Y (vector of length n) Reponses of the dataframe.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @return \item{lambda}{(numeric) The selected tuning parameter based on the
 #' estimated ensemble kernel matrix.}
 #' 
@@ -211,6 +209,9 @@ estimate_base <- function(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda){
 estimate_ridge <- function(X, K, Y, lambda){
   # standardize kernel matrix
   n <- length(Y)
+  if(sum(X[, 1] == 1) != n) {
+    X <- cbind(matrix(1, nrow = n, ncol = 1), X)
+  }
   V_inv <- ginv(K + lambda * diag(n))
   B_mat <- ginv(t(X) %*% V_inv %*% X) %*% t(X) %*% V_inv
   
@@ -249,10 +250,6 @@ estimate_ridge <- function(X, K, Y, lambda){
 #' 
 #' 
 #' ensemble_kernel_matrix(A_hat[[2]], eig_thres = 1e-11)
-#' 
-#' 
-#' 
-#' @export ensemble_kernel_matrix
 ensemble_kernel_matrix <- function(A_est, eig_thres = 1e-11){
   As <- svd(A_est)
   U <- As$u

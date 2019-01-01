@@ -12,7 +12,7 @@ define_model(formula, data, kern_par = NULL, fixed_num = 1,
 
 \item{data}{(dataframe, n*(p+q1+q2)) A dataframe to be fitted. See Details.}
 
-\item{kern_par}{(dataframe, K*4) A dataframe indicating the parameters of
+\item{kern_par}{(dataframe, K*3) A dataframe indicating the parameters of
 base kernels to fit random effects. See Details.}
 
 \item{fixed_num}{(integer) A numeric number specifying the dimension of
@@ -44,19 +44,19 @@ It processes data based on formula and label_names and creates a kernel
 library according to the parameters given in kern_par.
 
 * label_names: for two groups of random effects with sizes q1 and q2
-respectively, label_names contains two elements. The length of the first
-element is q1, indicating the names of q1 interiors variables, and the
-length of second one is q2, indicating the names of q2 interiors variables.
+  respectively, label_names contains two elements. The length of the first
+  element is q1, indicating the names of q1 interiors variables, and the
+  length of second one is q2, indicating the names of q2 interiors variables.
 
 * data: for a data with n observations and p+q variables (with sub-groups of
-sizes (q1, q2), q=q1+q2), the dimension of dataframe is n*(p+q). All entries
-should be numeric and the column name of response is "Y", while the column
-names of q variables are the ones from label_names.
+  sizes (q1, q2), q=q1+q2), the dimension of dataframe is n*(p+q). All entries
+  should be numeric and the column name of response is "Y", while the column
+  names of q variables are the ones from label_names.
 
 * kern_par: for a library of K kernels, the dimension of this dataframe is
-K*3. Each row represents a kernel. The first column is method, with entries
-of character class. The second and the third are l and p respectively, both
-with entries of numeric class.
+  K*3. Each row represents a kernel. The first column is method, with entries
+  of character class. The second and the third are l and p respectively, both
+  with entries of numeric class.
 }
 \examples{
 

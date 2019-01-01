@@ -118,7 +118,6 @@ ensemble <-
 #' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
-#' @export ensemble_stack
 ensemble_stack <- 
   function(n, kern_size, beta_exp, error_mat, A_hat) {
     
@@ -177,7 +176,6 @@ ensemble_stack <-
 #' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
-#' @export ensemble_avg
 ensemble_avg <- 
   function(n, kern_size, beta_exp, error_mat, A_hat) {
     
@@ -240,7 +238,6 @@ ensemble_avg <-
 #' Arnak S. Dalalyan and Alexandre B. Tsybakov. Aggregation by Exponential
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
-#' @export ensemble_exp
 ensemble_exp <- 
   function(n, kern_size, beta_exp, error_mat, A_hat) {
     

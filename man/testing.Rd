@@ -41,8 +41,8 @@ when strategy = "exp" \code{\link{ensemble_exp}}.}
 \item{test}{(character) A character string indicating which test is to be
 used.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise to be
-chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
+to be chosen. The lower limit of lambda must be above 0.}
 
 \item{B}{(integer) A numeric value indicating times of resampling when test
 = "boot".}

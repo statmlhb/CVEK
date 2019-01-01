@@ -5,9 +5,8 @@ test_that("data and kernel parameters are dataframes", {
   label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4"))
   data <- generate_data(n, fixed_num = 1, label_names, method = "rbf", 
                         int_effect = .3, l = 1, d = 2, eps = .01)
-  expect_is(mydata, "data.frame")
-  expect_is(kern_par, "data.frame")
   expect_is(data, "data.frame")
+  expect_is(kern_par, "data.frame")
 })
 
 

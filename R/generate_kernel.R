@@ -127,11 +127,10 @@ generate_kernel <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_intercept
 kernel_intercept <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d) {
-      1
+      matrix(1, nrow = nrow(X1), ncol = ncol(X2))
     }
     matrix_wise
   }
@@ -154,7 +153,6 @@ kernel_intercept <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_linear
 kernel_linear <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d) {
@@ -181,7 +179,6 @@ kernel_linear <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_polynomial
 kernel_polynomial <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d) {
@@ -207,7 +204,6 @@ kernel_polynomial <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_rbf
 kernel_rbf <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d) {
@@ -235,7 +231,6 @@ kernel_rbf <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_matern
 kernel_matern <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d){
@@ -269,7 +264,6 @@ kernel_matern <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_rational
 kernel_rational <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d){
@@ -299,7 +293,6 @@ kernel_rational <-
 #' of two matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export kernel_nn
 kernel_nn <-
   function(l, d) {
     matrix_wise <- function(X1, X2, l, d){
@@ -332,7 +325,6 @@ kernel_nn <-
 #' matrices.}
 #' @author Wenying Deng
 #' @references The MIT Press. Gaussian Processes for Machine Learning, 2006.
-#' @export square_dist
 square_dist <- function(X1, X2 = NULL, l = 1) {
   X1 <- X1 / l
   X1s <- apply(X1, 1, crossprod)

@@ -37,8 +37,8 @@
 #' when strategy = "exp" \code{\link{ensemble_exp}}.
 #' @param test (character) A character string indicating which test is to be
 #' used.
-#' @param lambda (numeric) A numeric string specifying the range of noise to be
-#' chosen. The lower limit of lambda must be above 0.
+#' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
+#' to be chosen. The lower limit of lambda must be above 0.
 #' @param B (integer) A numeric value indicating times of resampling when test
 #' = "boot".
 #' @return \item{pvalue}{(numeric) p-value of the test.}
@@ -86,6 +86,9 @@ testing <- function(formula_int, label_names, Y, X, Z1, Z2, kern_list,
   Z12 <- Z[, c((len + 1):dim(Z)[2])]
   n <- length(Y)
   
+  if(sum(X[, 1] == 1) != n) {
+    X <- cbind(matrix(1, nrow = n, ncol = 1), X)
+  }
   result <- estimation(Y, X, Z1, Z2, kern_list, mode, strategy, beta, lambda)
   lambda <- result$lambda
   beta0 <- result$beta
@@ -93,8 +96,8 @@ testing <- function(formula_int, label_names, Y, X, Z1, Z2, kern_list,
   K_ens <- result$K
   u_hat <- result$u_hat
   base_est <- result$base_est
-  y_fixed <- cbind(matrix(1, nrow = n, ncol = 1), X) %*% beta0
-  sigma2_hat <- estimate_noise(Y, X, lambda, y_fixed, alpha0, K_ens)
+  y_fixed <- X %*% beta0
+  sigma2_hat <- estimate_sigma2(Y, X, lambda, y_fixed, alpha0, K_ens)
   tau_hat <- sigma2_hat / lambda
   
   func_name <- paste0("test_", test)
@@ -153,7 +156,6 @@ testing <- function(formula_int, label_names, Y, X, Z1, Z2, kern_list,
 #' Petra Bu ̊zˇkova ́, Thomas Lumley, and Kenneth Rice. Permutation and
 #' parametric bootstrap tests for gene-gene and gene-environment interactions.
 #' January 2011.
-#' @export test_asym
 test_asym <- function(n, Y, X, Z12, y_fixed, alpha0,
                       K_ens, sigma2_hat, tau_hat, B) {
   
@@ -162,7 +164,6 @@ test_asym <- function(n, Y, X, Z12, y_fixed, alpha0,
   K0 <- K_ens
   K12 <- Z12 %*% t(Z12)
   V0_inv <- ginv(tau_hat * K0 + sigma2_hat * diag(n))
-  X = cbind(matrix(1, nrow = n, ncol = 1), X)
   P0_mat <- V0_inv - V0_inv %*%
     X %*% ginv(t(X) %*% V0_inv %*% X) %*% t(X) %*% V0_inv
   drV0_tau <- K0
@@ -230,7 +231,6 @@ test_asym <- function(n, Y, X, Z12, y_fixed, alpha0,
 #' Petra Bu ̊zˇkova ́, Thomas Lumley, and Kenneth Rice. Permutation and
 #' parametric bootstrap tests for gene-gene and gene-environment interactions.
 #' January 2011.
-#' @export test_boot
 test_boot <- function(n, Y, X, Z12, y_fixed, alpha0,
                       K_ens, sigma2_hat, tau_hat, B) {
   

@@ -202,16 +202,11 @@ generate_data <-
 #' 
 #' 
 #' 
-#' sigma2_hat <- estimate_noise(Y, X, lambda_hat, y_fixed, alpha0, K_ens)
-#' 
-#' 
-#' 
-#' @export estimate_noise
-estimate_noise <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
+#' sigma2_hat <- estimate_sigma2(Y, X, lambda_hat, y_fixed, alpha0, K_ens)
+estimate_sigma2 <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
 
   n <- length(Y)
   V_inv <- ginv(K_hat + lambda_hat * diag(n))
-  X <- cbind(matrix(1, nrow = n, ncol = 1), X)
   B_mat <- ginv(t(X) %*% V_inv %*% X) %*% t(X) %*% V_inv
   P_X <- X %*% B_mat
   P_K <- K_hat %*% V_inv %*% (diag(n) - P_X)
@@ -251,10 +246,6 @@ estimate_noise <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
 #' 
 #' 
 #' compute_stat(n = 100, Y, Z12, y_fixed, K_ens, sigma2_hat, tau_hat)
-#' 
-#' 
-#' 
-#' @export compute_stat
 compute_stat <-
   function(n, Y, Z12, y_fixed, K_gpr, sigma2_hat, tau_hat) {
 
@@ -298,10 +289,6 @@ compute_stat <-
 #' 
 #' I0 <- compute_info(P0_mat, mat_del = drV0_del,
 #' mat_sigma2 = drV0_sigma2, mat_tau = drV0_tau)
-#' 
-#' 
-#' 
-#' @export compute_info
 compute_info <-
   function(P0_mat, mat_del = NULL, mat_sigma2 = NULL, mat_tau = NULL) {
     
@@ -318,3 +305,27 @@ compute_info <-
 
     I0
   }
+
+
+
+#' Standardizing Matrix
+#' 
+#' Center and scale the data matrix into mean zero and standard deviation one.
+#' 
+#' This function gives the standardized data matrix.
+#' 
+#' @param X (matrix, n*p0) Original data matrix.
+#' @return \item{X}{(matrix, n*p0) Standardized data matrix.}
+#' @author Wenying Deng
+standardize <- function(X) {
+  
+  Xm <- colMeans(X)
+  n <- nrow(X)
+  p <- ncol(X)
+  X <- X - rep(Xm, rep(n, p))
+  Xscale <- drop(rep(1 / n, n) %*% X ^ 2) ^ .5
+  X <- X / rep(Xscale, rep(n, p))
+  
+  X
+}
+

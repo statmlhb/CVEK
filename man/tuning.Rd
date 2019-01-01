@@ -17,8 +17,8 @@ contains several subfactors).}
 \item{mode}{(character) A character string indicating which tuning parameter
 criteria is to be used.}
 
-\item{lambda}{(numeric) A numeric string specifying the range of noise to be
-chosen. The lower limit of lambda must be above 0.}
+\item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
+to be chosen. The lower limit of lambda must be above 0.}
 }
 \value{
 \item{lambda0}{(numeric) The estimated tuning parameter.}
