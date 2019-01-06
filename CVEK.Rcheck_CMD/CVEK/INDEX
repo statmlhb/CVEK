@@ -1,0 +1,39 @@
+define_model            Defining the Model
+ensemble                Estimating Ensemble Kernel Matrices
+ensemble_avg            Estimating Ensemble Kernel Matrices Using AVG
+ensemble_exp            Estimating Ensemble Kernel Matrices Using EXP
+ensemble_stack          Estimating Ensemble Kernel Matrices Using Stack
+estimate_ridge          Estimating a Single Model
+estimation              Conducting Gaussian Process Regression
+generate_data           Generating Original Data
+generate_formula        From Vectors to Single Variables
+generate_kernel         Generating A Single Kernel
+kern_par                Dataframe as an example for kernel parameters
+kernel_intercept        Generating A Single Matrix-wise Function Using
+                        Intercept
+kernel_linear           Generating A Single Matrix-wise Function Using
+                        Linear
+kernel_matern           Generating A Single Matrix-wise Function Using
+                        Matern
+kernel_nn               Generating A Single Matrix-wise Function Using
+                        Neural Network
+kernel_polynomial       Generating A Single Matrix-wise Function Using
+                        Polynomial
+kernel_rational         Generating A Single Matrix-wise Function Using
+                        Rational Quadratic
+kernel_rbf              Generating A Single Matrix-wise Function Using
+                        RBF
+mydata                  Dataset as an example
+test_asym               Conducting Score Tests for Interaction Using
+                        Asymptotic Test
+test_boot               Conducting Score Tests for Interaction Using
+                        Bootstrap Test
+testing                 Conducting Score Tests for Interaction
+tuning                  Calculating Tuning Parameters
+tuning_AIC              Calculating Tuning Parameters Using AIC
+tuning_AICc             Calculating Tuning Parameters Using AICc
+tuning_BIC              Calculating Tuning Parameters Using BIC
+tuning_GCV              Calculating Tuning Parameters Using GCV
+tuning_GCVc             Calculating Tuning Parameters Using GCVc
+tuning_gmpml            Calculating Tuning Parameters Using GMPML
+tuning_loocv            Calculating Tuning Parameters Using looCV
