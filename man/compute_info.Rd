@@ -27,16 +27,6 @@ Compute information matrices based on block matrices.
 \details{
 This function gives the information value of the interaction strength.
 }
-\examples{
-
-
-
-I0 <- compute_info(P0_mat, mat_del = drV0_del,
-mat_sigma2 = drV0_sigma2, mat_tau = drV0_tau)
-
-
-
-}
 \references{
 Arnab Maity and Xihong Lin. Powerful tests for detecting a gene
 effect in the presence of possible gene-gene interactions using garrote
@@ -45,3 +35,4 @@ kernel machines. December 2011.
 \author{
 Wenying Deng
 }
+\keyword{internal}

@@ -197,12 +197,9 @@ generate_data <-
 #' effects.}
 #' @author Wenying Deng
 #' @references Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
-#' Nonlinear Effect with Gaussian Processes. October 2017.
-#' @examples
-#' 
-#' 
-#' 
-#' sigma2_hat <- estimate_sigma2(Y, X, lambda_hat, y_fixed, alpha0, K_ens)
+#' Nonlinear Effect with Gaussian Processes. October 2017.s
+#' @keywords internal
+#' @export estimate_sigma2
 estimate_sigma2 <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
 
   n <- length(Y)
@@ -241,11 +238,8 @@ estimate_sigma2 <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
 #' @references Arnab Maity and Xihong Lin. Powerful tests for detecting a gene
 #' effect in the presence of possible gene-gene interactions using garrote
 #' kernel machines. December 2011.
-#' @examples
-#' 
-#' 
-#' 
-#' compute_stat(n = 100, Y, Z12, y_fixed, K_ens, sigma2_hat, tau_hat)
+#' @keywords internal
+#' @export compute_stat
 compute_stat <-
   function(n, Y, Z12, y_fixed, K_gpr, sigma2_hat, tau_hat) {
 
@@ -283,12 +277,8 @@ compute_stat <-
 #' @references Arnab Maity and Xihong Lin. Powerful tests for detecting a gene
 #' effect in the presence of possible gene-gene interactions using garrote
 #' kernel machines. December 2011.
-#' @examples
-#' 
-#' 
-#' 
-#' I0 <- compute_info(P0_mat, mat_del = drV0_del,
-#' mat_sigma2 = drV0_sigma2, mat_tau = drV0_tau)
+#' @keywords internal
+#' @export compute_info
 compute_info <-
   function(P0_mat, mat_del = NULL, mat_sigma2 = NULL, mat_tau = NULL) {
     
@@ -317,6 +307,8 @@ compute_info <-
 #' @param X (matrix, n*p0) Original data matrix.
 #' @return \item{X}{(matrix, n*p0) Standardized data matrix.}
 #' @author Wenying Deng
+#' @keywords internal
+#' @export standardize
 standardize <- function(X) {
   
   Xm <- colMeans(X)

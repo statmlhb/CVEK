@@ -42,8 +42,8 @@ I)^{-1}(y-\hat{\beta}X)}.
 
 
 
-estimate_ridge(X = cbind(matrix(1, nrow = 100, ncol = 1), X), K_ens, Y, 
-lambda = exp(seq(-10, 5)))
+estimate_ridge(X = cbind(matrix(1, nrow = 100, ncol = 1), CVEK:::X), 
+CVEK:::K_ens, CVEK:::Y, lambda = exp(seq(-10, 5)))
 
 
 

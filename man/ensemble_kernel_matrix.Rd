@@ -22,15 +22,7 @@ eigenvalues are smaller than the given threshold.
 After we obtain the ensemble projection matrix, we can calculate the
 ensemble kernel matrix.
 }
-\examples{
-
-
-
-ensemble_kernel_matrix(A_hat[[2]], eig_thres = 1e-11)
-
-
-
-}
 \author{
 Wenying Deng
 }
+\keyword{internal}

@@ -32,15 +32,6 @@ Compute score test statistics.
 \details{
 The test statistic is distributed as a scaled Chi-squared distribution.
 }
-\examples{
-
-
-
-compute_stat(n = 100, Y, Z12, y_fixed, K_ens, sigma2_hat, tau_hat)
-
-
-
-}
 \references{
 Arnab Maity and Xihong Lin. Powerful tests for detecting a gene
 effect in the presence of possible gene-gene interactions using garrote
@@ -49,3 +40,4 @@ kernel machines. December 2011.
 \author{
 Wenying Deng
 }
+\keyword{internal}

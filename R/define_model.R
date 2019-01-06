@@ -68,7 +68,7 @@ define_model <- function(formula, data, kern_par = NULL,
   X <- NULL
   Z1 <- NULL
   Z2 <- NULL
-  kern_list <- NULL
+  kern_list <- list()
   if (!is.null(label_names)) {
     re <- generate_formula(formula, label_names)
     generic_formula0 <- re$generic_formula

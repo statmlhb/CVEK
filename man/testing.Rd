@@ -77,7 +77,8 @@ computational effort to a permutation test.
 
 testing(formula_int = Y ~ X + Z1 * Z2,
 label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")),
-Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
+CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, CVEK:::kern_list, 
+mode = "loocv", strategy = "stack",
 beta_exp = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
 
 

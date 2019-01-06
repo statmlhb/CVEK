@@ -15,19 +15,8 @@ is to be computed.}
 
 \item{d}{(integer) For polynomial, d is the power; for matern, v = d + 1 / 2; for
 rational, alpha = d.}
-
-\item{method}{(character) A character string indicating which kernel is to
-be computed.}
-
-\item{l}{(numeric) A numeric number indicating the hyperparameter
-(flexibility) of a specific kernel.}
-
-\item{d}{(integer) For polynomial, d is the power; for matern, v = d + 1 /
-2; for rational, alpha = d.}
 }
 \value{
-\item{kern}{(function) A function indicating the generated kernel.}
-
 \item{kern}{(function) A function indicating the generated kernel.}
 }
 \description{
@@ -65,26 +54,10 @@ for (k in 1:nrow(kern_par)) {
 }
 
 
-
-
-
-kern_list <- list()
-for (k in 1:nrow(kern_par)) {
-  kern_list[[k]] <- generate_kernel(kern_par[k, ]$method,
-                                    kern_par[k, ]$l,
-                                    kern_par[k, ]$d)
-}
-
-
-
 }
 \references{
 The MIT Press. Gaussian Processes for Machine Learning, 2006.
-
-The MIT Press. Gaussian Processes for Machine Learning, 2006.
 }
 \author{
-Wenying Deng
-
 Wenying Deng
 }

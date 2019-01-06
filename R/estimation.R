@@ -44,8 +44,8 @@
 #' 
 #' 
 #' 
-#' estimation(Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
-#' beta_exp = 1, lambda = exp(seq(-10, 5)))
+#' estimation(CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, CVEK:::kern_list, 
+#' mode = "loocv", strategy = "stack", beta_exp = 1, lambda = exp(seq(-10, 5)))
 #' 
 #' 
 #' 
@@ -129,8 +129,10 @@ estimation <- function(Y, X, Z1, Z2, kern_list,
 #' 
 #' 
 #' 
-#' estimate_base(n = 100, kern_size = 3, Y, X, Z1, Z2, kern_list,
-#' mode = "loocv", lambda = exp(seq(-10, 5)))
+#' estimate_base(n = 100, kern_size = 3, CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, 
+#' CVEK:::kern_list, mode = "loocv", lambda = exp(seq(-10, 5)))
+#' @keywords internal
+#' @export estimate_base
 estimate_base <- function(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda){
   A_hat <- list()
   P_K_hat <- list()
@@ -200,8 +202,8 @@ estimate_base <- function(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda){
 #' 
 #' 
 #' 
-#' estimate_ridge(X = cbind(matrix(1, nrow = 100, ncol = 1), X), K_ens, Y, 
-#' lambda = exp(seq(-10, 5)))
+#' estimate_ridge(X = cbind(matrix(1, nrow = 100, ncol = 1), CVEK:::X), 
+#' CVEK:::K_ens, CVEK:::Y, lambda = exp(seq(-10, 5)))
 #' 
 #' 
 #' 
@@ -245,11 +247,8 @@ estimate_ridge <- function(X, K, Y, lambda){
 #' @param eig_thres (numeric) Threshold to truncate the kernel matrix.
 #' @return \item{K_hat}{(matrix, n*n) Estimated ensemble kernel matrix.}
 #' @author Wenying Deng
-#' @examples
-#' 
-#' 
-#' 
-#' ensemble_kernel_matrix(A_hat[[2]], eig_thres = 1e-11)
+#' @keywords internal
+#' @export ensemble_kernel_matrix
 ensemble_kernel_matrix <- function(A_est, eig_thres = 1e-11){
   As <- svd(A_est)
   U <- As$u

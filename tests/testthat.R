@@ -1,6 +1,6 @@
 library(testthat)
 library(CVEK)
-library(kernlab)
 library(mvtnorm)
+# library(kernlab)
 
 test_check("CVEK")

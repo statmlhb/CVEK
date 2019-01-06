@@ -62,11 +62,8 @@ every kernels in the kernel library and a n*K matrix indicating errors.
 
 
 
-estimate_base(n = 100, kern_size = 3, Y, X, Z1, Z2, kern_list,
-mode = "loocv", lambda = exp(seq(-10, 5)))
-
-
-
+estimate_base(n = 100, kern_size = 3, CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, 
+CVEK:::kern_list, mode = "loocv", lambda = exp(seq(-10, 5)))
 }
 \references{
 Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for
@@ -75,3 +72,4 @@ Nonlinear Effect with Gaus- sian Processes. October 2017.
 \author{
 Wenying Deng
 }
+\keyword{internal}

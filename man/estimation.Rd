@@ -63,8 +63,8 @@ gaussian process regression.
 
 
 
-estimation(Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
-beta_exp = 1, lambda = exp(seq(-10, 5)))
+estimation(CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, CVEK:::kern_list, 
+mode = "loocv", strategy = "stack", beta_exp = 1, lambda = exp(seq(-10, 5)))
 
 
 

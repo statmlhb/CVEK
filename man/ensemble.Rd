@@ -65,7 +65,7 @@ based on the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}.
 
 
 ensemble(n = 100, kern_size = 3, strategy = "stack", beta_exp = 1, 
-error_mat, A_hat)
+CVEK:::error_mat, CVEK:::A_hat)
 
 
 
