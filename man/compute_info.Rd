@@ -4,7 +4,8 @@
 \alias{compute_info}
 \title{Computing Information Matrices}
 \usage{
-compute_info(P0_mat, mat_del = NULL, mat_sigma2 = NULL, mat_tau = NULL)
+compute_info(P0_mat, mat_del = NULL, mat_sigma2 = NULL,
+  mat_tau = NULL)
 }
 \arguments{
 \item{P0_mat}{(matrix, n*n) Scale projection matrix under REML.}

@@ -4,9 +4,9 @@
 \alias{testing}
 \title{Conducting Score Tests for Interaction}
 \usage{
-testing(formula_int, label_names, Y, X, Z1, Z2, kern_list, mode = "loocv",
-  strategy = "stack", beta_exp = 1, test = "boot", lambda = exp(seq(-10,
-  5)), B = 100)
+testing(formula_int, label_names, Y, X, Z1, Z2, kern_list,
+  mode = "loocv", strategy = "stack", beta_exp = 1, test = "boot",
+  lambda = exp(seq(-10, 5)), B = 100)
 }
 \arguments{
 \item{formula_int}{(formula) A symbolic description of the model with
