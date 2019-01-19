@@ -4,24 +4,21 @@
 \alias{compute_stat}
 \title{Computing Score Test Statistics.}
 \usage{
-compute_stat(n, Y, Z12, y_fixed, K_gpr, sigma2_hat, tau_hat)
+compute_stat(Y, K_int, y_fixed, K0, sigma2_hat, tau_hat)
 }
 \arguments{
-\item{n}{(integer) A numeric number specifying the number of observations.}
-
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
-\item{Z12}{(dataframe, n*(q1\*q2)) The interaction items of the first and
-second groups of random effects variables in the dataframe.}
+\item{K_int}{(matrix, n*n) The kernel matrix to be tested.}
 
 \item{y_fixed}{(vector of length n) Estimated fixed effects of the
 responses.}
 
-\item{K_gpr}{(matrix, n*n) Estimated ensemble kernel matrix.}
-
 \item{sigma2_hat}{(numeric) The estimated noise of the fixed effects.}
 
 \item{tau_hat}{(numeric) The estimated noise of the random effects.}
+
+\item{K_0}{(matrix, n*n) Estimated ensemble kernel matrix.}
 }
 \value{
 \item{test_stat}{(numeric) The computed test statistic.}

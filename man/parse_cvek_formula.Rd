@@ -19,7 +19,7 @@ formula. Neither a matrix nor an array will be accepted.}
 }
 \value{
 A list of three slots:
-\item{X}{(matrix, n*1) The vector of response variable.}
+\item{Y}{(matrix, n*1) The vector of response variable.}
 \item{X}{(matrix, n*d_fix) The fixed effect matrix.}
 \item{K}{(list of matrices) A nested list of
 kernel term matrices. The first level corresponds to each base kernel
@@ -44,13 +44,13 @@ dimnames = list(NULL, paste0("x", 1:7))))
 data$y <- as.matrix(data) \%*\% rnorm(7)
 formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6) + k(x7) + k(x3, x4) * k(x5, x6) * x7
 kern_par <- data.frame(method = c("rbf", "polynomial", "matern"),
-l = c(.5, 1, 1.5), p = 1:3, stringsAsFactors = FALSE)
+l = c(.5, 1, 1.5), d = 1:3, stringsAsFactors = FALSE)
 
 # define kernel library
 kern_func_list <- list()
 for (d in 1:nrow(kern_par)) {
 kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method, 
-kern_par[d,]$l, kern_par[d,]$p)
+kern_par[d,]$l, kern_par[d,]$d)
 }
 
 parse_cvek_formula(formula, kern_func_list = kern_func_list, data = data)

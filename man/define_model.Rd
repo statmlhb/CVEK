@@ -62,9 +62,6 @@ library according to the parameters given in kern_par.
 
 
 
-kern_par <- data.frame(method = c("rbf", "polynomial", "matern"), 
-l = c(.5, 1, 1.5), d = 1:3)
-kern_par$method <- as.character(kern_par$method)
 define_model(formula = Y ~ X + Z1 + Z2, data = mydata, kern_par, 
 fixed_num = 1, label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")))
 

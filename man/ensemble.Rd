@@ -4,14 +4,9 @@
 \alias{ensemble}
 \title{Estimating Ensemble Kernel Matrices}
 \usage{
-ensemble(n, kern_size, strategy, beta_exp, error_mat, A_hat)
+ensemble(strategy, beta_exp, error_mat, A_hat)
 }
 \arguments{
-\item{n}{(integer) A numeric number specifying the number of observations.}
-
-\item{kern_size}{(integer, equals to K) A numeric number specifying the
-number of kernels in the kernel library.}
-
 \item{strategy}{(character) A character string indicating which ensemble
 strategy is to be used.}
 
@@ -64,8 +59,8 @@ based on the estimated errors \eqn{\{\hat{\epsilon}_d\}_{d=1}^D}.
 
 
 
-ensemble(n = 100, kern_size = 3, strategy = "stack", beta_exp = 1, 
-CVEK:::error_mat, CVEK:::A_hat)
+ensemble(strategy = "stack", beta_exp = 1, 
+CVEK:::error_mat, CVEK:::P_K_hat)
 
 
 

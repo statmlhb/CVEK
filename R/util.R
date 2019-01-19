@@ -215,22 +215,17 @@ estimate_sigma2 <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
 
 
 
-
-
-
 #' Computing Score Test Statistics.
 #' 
 #' Compute score test statistics.
 #' 
 #' The test statistic is distributed as a scaled Chi-squared distribution.
 #' 
-#' @param n (integer) A numeric number specifying the number of observations.
 #' @param Y (vector of length n) Reponses of the dataframe.
-#' @param Z12 (dataframe, n*(q1\*q2)) The interaction items of the first and
-#' second groups of random effects variables in the dataframe.
+#' @param K_int (matrix, n*n) The kernel matrix to be tested.
 #' @param y_fixed (vector of length n) Estimated fixed effects of the
 #' responses.
-#' @param K_gpr (matrix, n*n) Estimated ensemble kernel matrix.
+#' @param K_0 (matrix, n*n) Estimated ensemble kernel matrix.
 #' @param sigma2_hat (numeric) The estimated noise of the fixed effects.
 #' @param tau_hat (numeric) The estimated noise of the random effects.
 #' @return \item{test_stat}{(numeric) The computed test statistic.}
@@ -241,21 +236,15 @@ estimate_sigma2 <- function(Y, X, lambda_hat, y_fixed_hat, alpha_hat, K_hat) {
 #' @keywords internal
 #' @export compute_stat
 compute_stat <-
-  function(n, Y, Z12, y_fixed, K_gpr, sigma2_hat, tau_hat) {
-
-    K0 <- K_gpr
-    K12 <- Z12 %*% t(Z12)
+  function(Y, K_int, y_fixed, K0, sigma2_hat, tau_hat) {
+    
+    n <- length(Y)
     V0_inv <- ginv(tau_hat * K0 + sigma2_hat * diag(n))
     test_stat <- tau_hat * t(Y - y_fixed) %*% V0_inv %*%
-      K12 %*% V0_inv %*% (Y - y_fixed) / 2
+      K_int %*% V0_inv %*% (Y - y_fixed) / 2
 
     test_stat
   }
-
-
-
-
-
 
 
 
@@ -321,3 +310,27 @@ standardize <- function(X) {
   X
 }
 
+
+
+#' Computing Euclidean Distance between Two Vectors (Matrices)
+#' 
+#' Compute the L2 distance between two vectors or matrices.
+#' 
+#' This function gives the Euclidean distance between two 
+#' vectors or matrices.
+#' 
+#' @param x1 (vector/matrix) The first vector/matrix.
+#' @param x2 (vector/matrix, the same dimension as x1) 
+#' The second vector/matrix.
+#' @return \item{dist}{(numeric) Euclidean distance.}
+#' @author Wenying Deng
+#' @keywords internal
+#' @export euc_dist
+euc_dist <- function(x1, x2 = NULL) {
+  if (is.null(x2)) {
+    dist <- sqrt(sum(x1 ^ 2))
+  } else {
+    dist <- sqrt(sum((x1 - x2) ^ 2))
+  }
+  dist
+}
