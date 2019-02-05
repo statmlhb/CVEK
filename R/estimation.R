@@ -20,6 +20,8 @@
 #' when strategy = "exp" \code{\link{ensemble_exp}}.
 #' @param lambda (numeric) A numeric string specifying the range of noise to be
 #' chosen. The lower limit of lambda must be above 0.
+#' @param ... Additional parameters to pass to estimate_ridge.
+#' 
 #' @return \item{lambda}{(numeric) The selected tuning parameter based on the
 #' estimated ensemble kernel matrix.}
 #' 
@@ -50,7 +52,8 @@ estimation <- function(Y, X, K_list = list(NULL),
                        mode = "loocv", 
                        strategy = "stack", 
                        beta_exp = 1,
-                       lambda = exp(seq(-10, 5))) {
+                       lambda = exp(seq(-10, 5)), 
+                       ...) {
   
   # base model estimate
   n <- length(Y)
@@ -58,17 +61,23 @@ estimation <- function(Y, X, K_list = list(NULL),
     X <- cbind(matrix(1, nrow = n, ncol = 1), X)
   }
   
-  if (length(K_list) == 0) {
-    kern_term_effect <- NULL
+  kern_size <- length(K_list)
+  if (kern_size == 0) {
+    # if K_list is empty, estimate only fixed effect
+    # 'assemble' fake ensemble kernel matrix
     base_est <- NULL
     K_ens <- NULL
-    u_weight <- 1
+    
+    # final estimate
     lambda_ens <- tuning(Y, X, K_ens, mode, lambda)
-    ens_est <- estimate_ridge(Y = Y, X = X, K = K_ens, lambda = lambda_ens)
+    ens_est <- estimate_ridge(Y = Y, X = X, K = K_ens, lambda = lambda_ens, ...)
+    
+    # kernel terms estimates
+    u_weight <- 1
+    kern_term_effect <- NULL
   } else {
-    kern_size <- length(K_list)
-    # ensemble estimate
-    base_est <- estimate_base(Y, X, K_list, mode, lambda)
+    # if K_list is not empty, estimate full ensemble 
+    base_est <- estimate_base(Y, X, K_list, mode, lambda, ...)
     P_K_hat <- base_est$P_K_hat
     error_mat <- base_est$error_mat
     ens_res <- ensemble(strategy, beta_exp, error_mat, P_K_hat)
@@ -76,9 +85,10 @@ estimation <- function(Y, X, K_list = list(NULL),
     # assemble ensemble kernel matrix
     K_ens <- ensemble_kernel_matrix(ens_res$A_est)
     K_ens <- list(K_ens)
+    
     # final estimate
     lambda_ens <- tuning(Y, X, K_ens, mode, lambda)
-    ens_est <- estimate_ridge(Y = Y, X = X, K = K_ens, lambda = lambda_ens)
+    ens_est <- estimate_ridge(Y = Y, X = X, K = K_ens, lambda = lambda_ens, ...)
     
     # kernel terms estimates
     u_weight <- ens_res$u_hat
@@ -116,6 +126,8 @@ estimation <- function(Y, X, K_list = list(NULL),
 #' criteria is to be used.
 #' @param lambda (numeric) A numeric string specifying the range of noise to be
 #' chosen. The lower limit of lambda must be above 0.
+#' @param ... Additional parameters to pass to estimate_ridge.
+#' 
 #' @return \item{A_hat}{(list of length K) A list of projection matrices for
 #' each kernel in the kernel library.}
 #' 
@@ -137,7 +149,7 @@ estimation <- function(Y, X, K_list = list(NULL),
 #' Nonlinear Effect with Gaus- sian Processes. October 2017.
 #' @keywords internal
 #' @export estimate_base
-estimate_base <- function(Y, X, K_list, mode, lambda) {
+estimate_base <- function(Y, X, K_list, mode, lambda, ...) {
   A_hat <- list()
   P_K_hat <- list()
   beta_list <- list()
@@ -152,7 +164,7 @@ estimate_base <- function(Y, X, K_list, mode, lambda) {
     lambda0 <- tuning(Y, X, K_list[[k]], mode, lambda)
     estimate <- estimate_ridge(Y = Y, X = X, 
                                K = K_list[[k]], 
-                               lambda = lambda0)
+                               lambda = lambda0, ...)
     A <- estimate$proj_matrix$total
     
     # produce loocv error matrix
@@ -187,10 +199,13 @@ estimate_base <- function(Y, X, K_list, mode, lambda) {
 #' @param X (dataframe, n*p) Fixed effects variables in the dataframe (could
 #' contains several subfactors).
 #' @param K (list of matrices) A nested list of kernel term matrices, 
-#' correspondiing to each kernel term specified in the formula for 
+#' corresponding to each kernel term specified in the formula for 
 #' a base kernel function in kern_func_list.
 #' @param lambda (numeric) A numeric string specifying the range of tuning parameter 
 #' to be chosen. The lower limit of lambda must be above 0.
+#' @param compute_kernel_terms (logic) Whether to computing effect for each individual terms.
+#' If FALSE then only compute the overall effect.
+#' @param converge_thres (numeric) The convergence threshold for computing kernel terms.
 #' @return \item{lambda}{(numeric) The selected tuning parameter based on the
 #' estimated ensemble kernel matrix.}
 #' 
@@ -202,6 +217,8 @@ estimate_base <- function(Y, X, K_list, mode, lambda) {
 #' \item{proj_matrix}{(list of length 4) Estimated projection matrices of the
 #' model.}
 #' @author Wenying Deng
+#' @references Andreas Buja, Trevor Hastie, and Robert Tibshirani. (1989) 
+#' Linear Smoothers and Additive Models. Ann. Statist. Volume 17, Number 2, 453-510.
 #' @examples
 #' 
 #' 
@@ -213,14 +230,16 @@ estimate_base <- function(Y, X, K_list, mode, lambda) {
 #' 
 #' 
 #' @export estimate_ridge
-estimate_ridge <- function(Y, X, K, lambda){
+estimate_ridge <- function(Y, X, K, lambda, 
+                           compute_kernel_terms=TRUE, 
+                           converge_thres=1e-4){
   # standardize kernel matrix
   n <- length(Y)
   if(sum(X[, 1] == 1) != n) {
     X <- cbind(matrix(1, nrow = n, ncol = 1), X)
   }
   
-  # initialize parameters and calculate prj matrices
+  # initialize parameters and calculate projection matrices
   X_mat <- ginv(t(X) %*% X) %*% t(X)
   beta <- X_mat %*% Y
   P_K <- 0
@@ -228,7 +247,9 @@ estimate_ridge <- function(Y, X, K, lambda){
   P_K0 <- NULL
   alpha_mat <- NULL
   kern_term_mat <- NULL
+  
   if (!is.null(K)) {
+    # prepare matrices needed for computing project
     alpha_mat <- matrix(0, nrow = n, ncol = length(K))
     A <- 0
     H <- X %*% X_mat
@@ -253,27 +274,36 @@ estimate_ridge <- function(Y, X, K, lambda){
     # P_K0 <- P_K %*% ginv(diag(n) - P_X)
     P_K0 <- B
     
-    # iterative update
-    alpha_temp <- 1e3 * alpha_mat
-    while (euc_dist(alpha_mat, alpha_temp) > 1e-4) {
-      alpha_temp <- alpha_mat
-      kernel_effect <- 0
+    # compute kernel term effects 
+    if (!compute_kernel_terms) {
+      # compute overall effect
+      beta <- X_mat %*% (diag(n) - P_K) %*% Y
+      kern_term_mat <- P_K %*% Y
+    } else {
+      # compute individual terms by iterative update using backfitting algorithm
+      alpha_temp <- 1e3 * alpha_mat
+      
+      while (euc_dist(alpha_mat, alpha_temp) > converge_thres) {
+        alpha_temp <- alpha_mat
+        kernel_effect <- 0
+        for (d in seq(length(K))) {
+          kernel_effect <- kernel_effect + K[[d]] %*% alpha_mat[, d]
+        }
+        beta <- X_mat %*% (Y - kernel_effect)
+        for (d in seq(length(K))) {
+          alpha_mat[, d] <- 
+            V_inv_list[[d]] %*% 
+            (Y - X %*% beta - kernel_effect + K[[d]] %*% alpha_mat[, d])
+        }
+      }      
+      
+      # kernel terms estimates
+      kern_term_mat <- matrix(0, nrow = n, ncol = length(K))
       for (d in seq(length(K))) {
-        kernel_effect <- kernel_effect + K[[d]] %*% alpha_mat[, d]
-      }
-      beta <- X_mat %*% (Y - kernel_effect)
-      for (d in seq(length(K))) {
-        alpha_mat[, d] <- 
-          V_inv_list[[d]] %*% 
-          (Y - X %*% beta - kernel_effect + K[[d]] %*% alpha_mat[, d])
+        kern_term_mat[, d] <- K[[d]] %*% alpha_mat[, d]
       }
     }
     
-    # kernel terms estimates
-    kern_term_mat <- matrix(0, nrow = n, ncol = length(K))
-    for (d in seq(length(K))) {
-      kern_term_mat[, d] <- K[[d]] %*% alpha_mat[, d]
-    }
   }
   proj_matrix_list <- list(total = P_X + P_K,
                            P_X = P_X, P_K = P_K,
