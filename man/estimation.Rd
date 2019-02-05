@@ -5,7 +5,7 @@
 \title{Conducting Gaussian Process Regression}
 \usage{
 estimation(Y, X, K_list = list(NULL), mode = "loocv",
-  strategy = "stack", beta_exp = 1, lambda = exp(seq(-10, 5)))
+  strategy = "stack", beta_exp = 1, lambda = exp(seq(-10, 5)), ...)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
@@ -28,6 +28,8 @@ when strategy = "exp" \code{\link{ensemble_exp}}.}
 
 \item{lambda}{(numeric) A numeric string specifying the range of noise to be
 chosen. The lower limit of lambda must be above 0.}
+
+\item{...}{Additional parameters to pass to estimate_ridge.}
 }
 \value{
 \item{lambda}{(numeric) The selected tuning parameter based on the

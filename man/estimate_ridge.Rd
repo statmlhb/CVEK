@@ -4,7 +4,8 @@
 \alias{estimate_ridge}
 \title{Estimating a Single Model}
 \usage{
-estimate_ridge(Y, X, K, lambda)
+estimate_ridge(Y, X, K, lambda, compute_kernel_terms = TRUE,
+  converge_thres = 1e-04)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
@@ -13,11 +14,16 @@ estimate_ridge(Y, X, K, lambda)
 contains several subfactors).}
 
 \item{K}{(list of matrices) A nested list of kernel term matrices, 
-correspondiing to each kernel term specified in the formula for 
+corresponding to each kernel term specified in the formula for 
 a base kernel function in kern_func_list.}
 
 \item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
 to be chosen. The lower limit of lambda must be above 0.}
+
+\item{compute_kernel_terms}{(logic) Whether to computing effect for each individual terms.
+If FALSE then only compute the overall effect.}
+
+\item{converge_thres}{(numeric) The convergence threshold for computing kernel terms.}
 }
 \value{
 \item{lambda}{(numeric) The selected tuning parameter based on the
@@ -50,6 +56,10 @@ lambda = CVEK:::lambda_ens)
 
 
 
+}
+\references{
+Andreas Buja, Trevor Hastie, and Robert Tibshirani. (1989) 
+Linear Smoothers and Additive Models. Ann. Statist. Volume 17, Number 2, 453-510.
 }
 \author{
 Wenying Deng

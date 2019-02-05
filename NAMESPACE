@@ -3,6 +3,7 @@
 export(compute_info)
 export(compute_stat)
 export(cvek)
+export(cvek_test)
 export(define_model)
 export(ensemble)
 export(ensemble_kernel_matrix)
