@@ -4,30 +4,20 @@
 \alias{testing}
 \title{Conducting Score Tests for Interaction}
 \usage{
-testing(formula_int, label_names, Y, X, Z1, Z2, kern_list,
-  mode = "loocv", strategy = "stack", beta_exp = 1, test = "boot",
-  lambda = exp(seq(-10, 5)), B = 100)
+testing(Y, X, K_list, K_int, mode = "loocv", strategy = "stack",
+  beta_exp = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
 }
 \arguments{
-\item{formula_int}{(formula) A symbolic description of the model with
-interaction.}
-
-\item{label_names}{(list) A character string indicating all the interior
-variables included in each group of random effect. See Details.}
-
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
 \item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{Z1}{(dataframe, n*q1) The first group of random effects variables in
-the dataframe (could contains several subfactors).}
+\item{K_list}{(list of matrices) A nested list of kernel term matrices. 
+The first level corresponds to each base kernel function in kern_func_list, 
+the second level corresponds to each kernel term specified in the formula.}
 
-\item{Z2}{(dataframe, n*q2) The second group of random effects variables in
-the dataframe (could contains several subfactors).}
-
-\item{kern_list}{(list of length K) A list of kernel functions given by
-user.}
+\item{K_int}{(matrix, n*n) The kernel matrix to be tested.}
 
 \item{mode}{(character) A character string indicating which tuning parameter
 criteria is to be used.}
@@ -73,13 +63,13 @@ computational effort to a permutation test.
 }
 \examples{
 
-
-
-testing(formula_int = Y ~ X + Z1 * Z2,
-label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4")),
-CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, CVEK:::kern_list, 
+rbf_kern_func <- generate_kernel(method = "rbf", l = 1.25)
+K_int <- parse_kernel_terms(y ~ k(x1):k(x3, x4):x2, rbf_kern_func, dora)
+testing(Y = CVEK:::model_matrices$y, X = CVEK:::model_matrices$X, 
+K_list = CVEK:::model_matrices$K, K_int = K_int[[1]], 
 mode = "loocv", strategy = "stack",
-beta_exp = 1, test = "boot", lambda = exp(seq(-10, 5)), B = 100)
+beta_exp = 1, test = "boot", lambda = exp(seq(-10, 5)), 
+B = 100)
 
 
 

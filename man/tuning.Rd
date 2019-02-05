@@ -74,7 +74,8 @@ y^{\star T}(I-A_\lambda)y^\star-\frac{1}{n-1}log \mid I-A_\lambda \mid
 
 
 
-lambda0 <- tuning(CVEK:::Y, CVEK:::X, K_mat = CVEK:::K_ens, 
+lambda0 <- tuning(Y = CVEK:::model_matrices$y, 
+X = CVEK:::model_matrices$X, K_mat = CVEK:::K_ens, 
 mode = "loocv", lambda = exp(seq(-10, 5)))
 
 

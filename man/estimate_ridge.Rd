@@ -4,15 +4,17 @@
 \alias{estimate_ridge}
 \title{Estimating a Single Model}
 \usage{
-estimate_ridge(X, K, Y, lambda)
+estimate_ridge(Y, X, K, lambda)
 }
 \arguments{
+\item{Y}{(vector of length n) Reponses of the dataframe.}
+
 \item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{K}{(matrix, n*n) Kernel matrix.}
-
-\item{Y}{(vector of length n) Reponses of the dataframe.}
+\item{K}{(list of matrices) A nested list of kernel term matrices, 
+correspondiing to each kernel term specified in the formula for 
+a base kernel function in kern_func_list.}
 
 \item{lambda}{(numeric) A numeric string specifying the range of tuning parameter 
 to be chosen. The lower limit of lambda must be above 0.}
@@ -23,8 +25,8 @@ estimated ensemble kernel matrix.}
 
 \item{beta}{(matrix, p*1) Fixed effects estimator of the model.}
 
-\item{alpha}{(vector of length n) Random effects estimator of the estimated
-ensemble kernel matrix.}
+\item{alpha}{(matrix, n*length(K)) Random effects estimator for each kernel 
+term specified in the formula.}
 
 \item{proj_matrix}{(list of length 4) Estimated projection matrices of the
 model.}
@@ -42,8 +44,9 @@ I)^{-1}(y-\hat{\beta}X)}.
 
 
 
-estimate_ridge(X = cbind(matrix(1, nrow = 100, ncol = 1), CVEK:::X), 
-CVEK:::K_ens, CVEK:::Y, lambda = exp(seq(-10, 5)))
+estimate_ridge(Y = CVEK:::model_matrices$y, 
+X = CVEK:::model_matrices$X, K = CVEK:::K_ens, 
+lambda = CVEK:::lambda_ens)
 
 
 

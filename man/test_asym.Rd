@@ -4,18 +4,15 @@
 \alias{test_asym}
 \title{Conducting Score Tests for Interaction Using Asymptotic Test}
 \usage{
-test_asym(n, Y, X, Z12, y_fixed, alpha0, K_ens, sigma2_hat, tau_hat, B)
+test_asym(Y, X, K_int, y_fixed, alpha0, K_ens, sigma2_hat, tau_hat, B)
 }
 \arguments{
-\item{n}{(integer) A numeric number specifying the number of observations.}
-
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
 \item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{Z12}{(dataframe, n*(q1\*q2)) The interaction items of the first and
-second groups of random effects variables in the dataframe.}
+\item{K_int}{(matrix, n*n) The kernel matrix to be tested.}
 
 \item{y_fixed}{(vector of length n) Estimated fixed effects of the
 responses.}

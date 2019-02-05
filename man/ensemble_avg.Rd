@@ -4,14 +4,9 @@
 \alias{ensemble_avg}
 \title{Estimating Ensemble Kernel Matrices Using AVG}
 \usage{
-ensemble_avg(n, kern_size, beta_exp, error_mat, A_hat)
+ensemble_avg(beta_exp, error_mat, A_hat)
 }
 \arguments{
-\item{n}{(integer) A numeric number specifying the number of observations.}
-
-\item{kern_size}{(integer, equals to K) A numeric number specifying the
-number of kernels in the kernel library.}
-
 \item{beta_exp}{(numeric/character) A numeric value specifying the parameter
 when strategy = "exp" \code{\link{ensemble_exp}}.}
 

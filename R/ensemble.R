@@ -29,9 +29,6 @@
 #' \parallel_2^2/\beta)}{\sum_{d=1}^Dexp(-\parallel \hat{\epsilon}_d
 #' \parallel_2^2/\beta)}}
 #' 
-#' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, equals to K) A numeric number specifying the
-#' number of kernels in the kernel library.
 #' @param strategy (character) A character string indicating which ensemble
 #' strategy is to be used.
 #' @param beta_exp (numeric/character) A numeric value specifying the parameter
@@ -59,20 +56,21 @@
 #' 
 #' 
 #' 
-#' ensemble(n = 100, kern_size = 3, strategy = "stack", beta_exp = 1, 
-#' CVEK:::error_mat, CVEK:::A_hat)
+#' ensemble(strategy = "stack", beta_exp = 1, 
+#' CVEK:::error_mat, CVEK:::P_K_hat)
 #' 
 #' 
 #' 
 #' @export ensemble
 ensemble <-
-  function(n, kern_size, strategy, beta_exp, error_mat, A_hat) {
+  function(strategy, beta_exp, error_mat, A_hat) {
     
     strategy <- match.arg(strategy, c("avg", "exp", "stack"))
     func_name <- paste0("ensemble_", strategy)
     
-    do.call(func_name, list(n = n, kern_size = kern_size, beta_exp = beta_exp,
-                            error_mat = error_mat, A_hat = A_hat))
+    do.call(func_name, list(beta_exp = beta_exp,
+                            error_mat = error_mat, 
+                            A_hat = A_hat))
   }
 
 
@@ -94,9 +92,6 @@ ensemble <-
 #' A_{d,\hat{\lambda}_d}y=\hat{A}y} where \eqn{\hat{A}=\sum_{d=1}^D \hat{u}_d
 #' A_{d,\hat{\lambda}_d}} is the ensemble matrix.
 #' 
-#' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, equals to K) A numeric number specifying the
-#' number of kernels in the kernel library.
 #' @param beta_exp (numeric/character) A numeric value specifying the parameter
 #' when strategy = "exp" \code{\link{ensemble_exp}}.
 #' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
@@ -119,8 +114,10 @@ ensemble <-
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
 ensemble_stack <- 
-  function(n, kern_size, beta_exp, error_mat, A_hat) {
+  function(beta_exp, error_mat, A_hat) {
     
+    n <- nrow(error_mat)
+    kern_size <- ncol(error_mat)
     A <- error_mat
     B <- rep(0, n)
     E <- rep(1, kern_size)
@@ -152,9 +149,6 @@ ensemble_stack <-
 #' to obtain the ensemble matrix by simply choosing unsupervised weights
 #' \eqn{u_d=1/D} for \eqn{d=1,2,...D}.
 #' 
-#' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, equals to K) A numeric number specifying the
-#' number of kernels in the kernel library.
 #' @param beta_exp (numeric/character) A numeric value specifying the parameter
 #' when strategy = "exp" \code{\link{ensemble_exp}}.
 #' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
@@ -177,8 +171,10 @@ ensemble_stack <-
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
 ensemble_avg <- 
-  function(n, kern_size, beta_exp, error_mat, A_hat) {
+  function(beta_exp, error_mat, A_hat) {
     
+    n <- nrow(error_mat)
+    kern_size <- ncol(error_mat)
     u_hat <- rep(1 / kern_size, kern_size)
     A_est <- (1 / kern_size) * A_hat[[1]]
     if (kern_size != 1) {
@@ -214,9 +210,6 @@ ensemble_avg <-
 #' other positive numeric number, where \eqn{\{RSS\} _{d=1}^D} are the set of
 #' residual sum of squares of \eqn{D} base kernels.
 #' 
-#' @param n (integer) A numeric number specifying the number of observations.
-#' @param kern_size (integer, equals to K) A numeric number specifying the
-#' number of kernels in the kernel library.
 #' @param beta_exp (numeric/character) A numeric value specifying the parameter
 #' when strategy = "exp". See Details.
 #' @param error_mat (matrix, n*K) A n\*K matrix indicating errors.
@@ -239,8 +232,10 @@ ensemble_avg <-
 #' Weighting and Sharp Oracle Inequalities. In Learning Theory, Lecture Notes
 #' in Computer Science, pages 97– 111. Springer, Berlin, Heidelberg, June 2007.
 ensemble_exp <- 
-  function(n, kern_size, beta_exp, error_mat, A_hat) {
+  function(beta_exp, error_mat, A_hat) {
     
+    n <- nrow(error_mat)
+    kern_size <- ncol(error_mat)
     A <- error_mat
     if (beta_exp == "med") {
       beta <- median(apply(A, 2, function(x) sum(x ^ 2)))

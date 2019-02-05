@@ -4,8 +4,8 @@
 \alias{estimation}
 \title{Conducting Gaussian Process Regression}
 \usage{
-estimation(Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
-  beta_exp = 1, lambda = exp(seq(-10, 5)))
+estimation(Y, X, K_list = list(NULL), mode = "loocv",
+  strategy = "stack", beta_exp = 1, lambda = exp(seq(-10, 5)))
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
@@ -13,14 +13,9 @@ estimation(Y, X, Z1, Z2, kern_list, mode = "loocv", strategy = "stack",
 \item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{Z1}{(dataframe, n*q1) The first group of random effects variables in
-the dataframe (could contains several subfactors).}
-
-\item{Z2}{(dataframe, n*q2) The second group of random effects variables in
-the dataframe (could contains several subfactors).}
-
-\item{kern_list}{(list of length K) A list of kernel functions given by
-user.}
+\item{K_list}{(list of matrices) A nested list of kernel term matrices. 
+The first level corresponds to each base kernel function in kern_func_list, 
+the second level corresponds to each kernel term specified in the formula.}
 
 \item{mode}{(character) A character string indicating which tuning parameter
 criteria is to be used.}
@@ -61,12 +56,11 @@ gaussian process regression.
 }
 \examples{
 
-
-
-estimation(CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, CVEK:::kern_list, 
-mode = "loocv", strategy = "stack", beta_exp = 1, lambda = exp(seq(-10, 5)))
-
-
+result <- estimation(Y = CVEK:::model_matrices$y, 
+X = CVEK:::model_matrices$X, 
+K_list = CVEK:::model_matrices$K, 
+mode = "loocv", strategy = "stack", 
+beta_exp = 1, lambda = exp(seq(-10, 5)))
 
 }
 \seealso{

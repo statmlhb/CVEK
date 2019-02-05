@@ -46,11 +46,11 @@ x')=\frac{2}{\pi}sin^{-1}\Big(\frac{2\tilde{x}^T
 \examples{
 
 
-kern_list <- list()
-for (k in 1:nrow(kern_par)) {
-  kern_list[[k]] <- generate_kernel(kern_par[k, ]$method,
-                                    kern_par[k, ]$l,
-                                    kern_par[k, ]$d)
+kern_func_list <- list()
+for (j in 1:nrow(kern_par)) {
+  kern_func_list[[j]] <- generate_kernel(kern_par[j, ]$method,
+                                         kern_par[j, ]$l,
+                                         kern_par[j, ]$d)
 }
 
 

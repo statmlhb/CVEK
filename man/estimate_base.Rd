@@ -4,27 +4,17 @@
 \alias{estimate_base}
 \title{Estimating Projection Matrices}
 \usage{
-estimate_base(n, kern_size, Y, X, Z1, Z2, kern_list, mode, lambda)
+estimate_base(Y, X, K_list, mode, lambda)
 }
 \arguments{
-\item{n}{(integer) A numeric number specifying the number of observations.}
-
-\item{kern_size}{(integer, equals to K) A numeric number specifying the
-number of kernels in the kernel library.}
-
 \item{Y}{(vector of length n) Reponses of the dataframe.}
 
 \item{X}{(dataframe, n*p) Fixed effects variables in the dataframe (could
 contains several subfactors).}
 
-\item{Z1}{(dataframe, n*q1) The first group of random effects variables in
-the dataframe (could contains several subfactors).}
-
-\item{Z2}{(dataframe, n*q2) The second group of random effects variables in
-the dataframe (could contains several subfactors).}
-
-\item{kern_list}{(list of length K) A list of kernel functions given by
-user.}
+\item{K_list}{(list of matrices) A nested list of kernel term matrices. 
+The first level corresponds to each base kernel function in kern_func_list, 
+the second level corresponds to each kernel term specified in the formula.}
 
 \item{mode}{(character) A character string indicating which tuning parameter
 criteria is to be used.}
@@ -57,13 +47,6 @@ library.
 \details{
 For a given mode, this function return a list of projection matrices for
 every kernels in the kernel library and a n*K matrix indicating errors.
-}
-\examples{
-
-
-
-estimate_base(n = 100, kern_size = 3, CVEK:::Y, CVEK:::X, CVEK:::Z1, CVEK:::Z2, 
-CVEK:::kern_list, mode = "loocv", lambda = exp(seq(-10, 5)))
 }
 \references{
 Jeremiah Zhe Liu and Brent Coull. Robust Hypothesis Test for

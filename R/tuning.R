@@ -78,7 +78,8 @@
 #' 
 #' 
 #' 
-#' lambda0 <- tuning(CVEK:::Y, CVEK:::X, K_mat = CVEK:::K_ens, 
+#' lambda0 <- tuning(Y = CVEK:::model_matrices$y, 
+#' X = CVEK:::model_matrices$X, K_mat = CVEK:::K_ens, 
 #' mode = "loocv", lambda = exp(seq(-10, 5)))
 #' 
 #' 
