@@ -283,13 +283,13 @@ estimate_ridge <- function(Y, X, K, lambda,
       # compute individual terms by iterative update using backfitting algorithm
       alpha_temp <- 1e3 * alpha_mat
       
+      beta <- X_mat %*% (diag(n) - P_K) %*% Y
       while (euc_dist(alpha_mat, alpha_temp) > converge_thres) {
         alpha_temp <- alpha_mat
         kernel_effect <- 0
         for (d in seq(length(K))) {
           kernel_effect <- kernel_effect + K[[d]] %*% alpha_mat[, d]
         }
-        beta <- X_mat %*% (Y - kernel_effect)
         for (d in seq(length(K))) {
           alpha_mat[, d] <- 
             V_inv_list[[d]] %*% 
