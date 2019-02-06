@@ -1,7 +1,7 @@
 context("Model definition")
 
 test_that("data and kernel parameters are dataframes", {
-  n <- 100
+  n <- 50
   label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4"))
   data <- generate_data(n, fixed_num = 1, label_names, method = "rbf", 
                         int_effect = .3, l = 1, d = 2, eps = .01)
@@ -12,7 +12,7 @@ test_that("data and kernel parameters are dataframes", {
 
 test_that("type of output", {
   formula <- Y ~ X + Z1 + Z2
-  n <- 100
+  n <- 50
   label_names = list(Z1 = c("z1", "z2"), Z2 = c("z3", "z4"))
   kern_par <- data.frame(method = c("rbf", "polynomial", "matern"), 
                          l = c(.5, 1, 1.5), d = 1:3)

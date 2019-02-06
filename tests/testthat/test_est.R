@@ -12,7 +12,7 @@ test_that(desc = "single kernel term case",
                                                      kern_par[j,]$l, 
                                                      kern_par[j,]$d)
             }
-            n <- 100
+            n <- 50
             d <- 4
             formula <- y ~ x1 + x2 + k(x3, x4)
             data <- as.data.frame(matrix(
@@ -72,7 +72,7 @@ test_that(desc = "two kernel terms case",
                                                      kern_par[j,]$l, 
                                                      kern_par[j,]$d)
             }
-            n <- 100
+            n <- 50
             d <- 6
             formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6)
             data <- as.data.frame(matrix(
@@ -136,7 +136,7 @@ test_that(desc = "individual term estimate consistent with projection matrix",
                                                      kern_par[j,]$l, 
                                                      kern_par[j,]$d)
             }
-            n <- 100
+            n <- 50
             d <- 6
             formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6)
             data <- as.data.frame(matrix(
@@ -183,7 +183,7 @@ test_that(desc = "individual term estimate consistent with projection matrix",
             y_est_byterm <- result_byterm$kern_term_effect[, 1] + 
               result_byterm$kern_term_effect[, 2]
             
-            diff <- euc_dist(y_est_overall, y_est_byterm)^2 / length(y_est)
+            diff <- euc_dist(y_est_overall, y_est_byterm)^2 / length(y_est_byterm)
             expect_lte(diff, .001)
           })
 
