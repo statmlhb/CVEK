@@ -51,7 +51,6 @@
 #' }
 #'
 #' cvek(formula, kern_func_list = kern_func_list, data = data)
-
 cvek <- function(formula,
                  kern_func_list,
                  data,
@@ -83,12 +82,16 @@ cvek <- function(formula,
     lambda = lambda
   )
   
+  est_res$kern_func_list <- kern_func_list
+  
   # conduct hypothesis test if formula_test is given.
   if (class(formula_test) == "formula") {
-    est_res$pvalue <- cvek_test(est_res, 
-                                formula_test, kern_func_list, data,
+    est_res$pvalue <- cvek_test(est_res,
+                                formula_test, 
+                                kern_func_list,
+                                data,
                                 test = test,
-                                alt_kernel_type= alt_kernel_type,
+                                alt_kernel_type = alt_kernel_type,
                                 B = B,
                                 verbose = verbose
     )
@@ -100,7 +103,7 @@ cvek <- function(formula,
 
 #' Conduct Hypothesis Testing based on CVEK estimation result.
 #'
-#' @param est_res (list) List of results returned by estimation() procedure.
+#' @param est_res (list) Estimation results returned by estimation() procedure.
 #' @param formula_test (formula) A user-supplied formula indicating the alternative
 #' effect to test. All terms in the alternative mode must be specified as kernel terms.
 #' @param kern_func_list (list) a list of kernel functions in the kernel library
@@ -129,7 +132,8 @@ cvek_test <- function(est_res,
                       B = 100,
                       verbose = FALSE) {
   # TODO: generalize to allow ensemble effect kernels.
-  alt_kernel_type <- match.arg(alt_kernel_type, c("linear", "ensemble"))
+  alt_kernel_type <-
+    match.arg(alt_kernel_type, c("linear", "ensemble"))
   
   # define kernel functions for alternative effect
   if (alt_kernel_type == "linear") {
@@ -166,6 +170,7 @@ cvek_test <- function(est_res,
         K / tr(K))
     K_int <- Reduce("+", K_std_list)
   } else {
+    #TODO(dorabee): fill in definition for ensemble kernel.
     stop("Currently only linear alternative kernel is supported.")
   }
   
@@ -196,7 +201,6 @@ cvek_test <- function(est_res,
                     B = B
     )
   )
-  
 }
 
 #' Parses user-supplied formula to fixed-effect and kernel matrices.
