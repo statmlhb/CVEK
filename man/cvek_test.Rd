@@ -8,7 +8,7 @@ cvek_test(est_res, formula_test, kern_func_list, data, test = "boot",
   alt_kernel_type = "linear", B = 100, verbose = FALSE)
 }
 \arguments{
-\item{est_res}{(list) List of results returned by estimation() procedure.}
+\item{est_res}{(list) Estimation results returned by estimation() procedure.}
 
 \item{formula_test}{(formula) A user-supplied formula indicating the alternative
 effect to test. All terms in the alternative mode must be specified as kernel terms.}
