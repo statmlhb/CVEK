@@ -10,7 +10,7 @@ test_that("range of output", {
                                            kern_par[j,]$l, 
                                            kern_par[j,]$d)
   }
-  n <- 100
+  n <- 50
   d <- 6
   formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6)
   data <- as.data.frame(matrix(
@@ -58,7 +58,7 @@ test_that("warning message from tuning", {
                                            kern_par[j,]$l, 
                                            kern_par[j,]$d)
   }
-  n <- 100
+  n <- 50
   d <- 6
   formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6)
   data <- as.data.frame(matrix(

@@ -4,7 +4,7 @@
 \alias{estimate_base}
 \title{Estimating Projection Matrices}
 \usage{
-estimate_base(Y, X, K_list, mode, lambda)
+estimate_base(Y, X, K_list, mode, lambda, ...)
 }
 \arguments{
 \item{Y}{(vector of length n) Reponses of the dataframe.}
@@ -21,6 +21,8 @@ criteria is to be used.}
 
 \item{lambda}{(numeric) A numeric string specifying the range of noise to be
 chosen. The lower limit of lambda must be above 0.}
+
+\item{...}{Additional parameters to pass to estimate_ridge.}
 }
 \value{
 \item{A_hat}{(list of length K) A list of projection matrices for

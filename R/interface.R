@@ -1,12 +1,15 @@
-#' Conducting Gaussian Process Regression based on user-specified formula.
+#' Conducting Cross-validated Kernel Ensemble based on user-specified formula.
 #'
-#' Conduct gaussian process regression based on the estimated ensemble kernel
-#' matrix.
+#' Perform Cross-validated Kernel Ensemble and optionally testing for kernel effect
+#' based on user-specified formula.
+#'
 #' @param formula (formula) A user-supplied formula.
 #' @param kern_func_list (list) a list of kernel functions in the kernel library
 #' @param data (data.frame, n*d) a data.frame, list or environment (or object
 #' coercible by as.data.frame to a data.frame), containing the variables in
 #' formula. Neither a matrix nor an array will be accepted.
+#' @param formula_test (formula) A user-supplied formula indicating the alternative
+#' effect to test. All terms in the alternative mode must be specified as kernel terms.
 #' @param mode (character) A character string indicating which tuning parameter
 #' criteria is to be used.
 #' @param strategy (character) A character string indicating which ensemble
@@ -16,42 +19,51 @@
 #' @param lambda (numeric) A numeric string specifying the range of noise to be
 #' chosen. The lower limit of lambda must be above 0.
 #' @param verbose (logical) Whether to print additional messages.
+#' @param test (character) Type of hypothesis test to conduct.
+#' Must be eitehr 'asymp' or 'boot'.
+#' @param alt_kernel_type (character) Type of alternative kernel effect to consider.
+#' Must be either 'linear' or 'ensemble'
+#' @param B (numeric) Number of boostrap samples.
 #'
-#' @return A list of results from kernel ensemble estimates. It contains 
-#' lambda (numeric) The estimated tuning parameter. 
-#' beta (matrix, d_fixed*1) fixed effect estimates. 
-#' alpha (matrix, n*1) kernel effect estimates. 
+#' @return A list of results from kernel ensemble estimates. It contains
+#' lambda (numeric) The estimated tuning parameter.
+#' beta (matrix, d_fixed*1) fixed effect estimates.
+#' alpha (matrix, n*1) kernel effect estimates.
 #' K (matrix, n*n) Estimated ensemble kernel matrix.
 #' u_hat (vector of length K) ensemble weight for kernel matrix.
 #' base_est (list) result list output by the ensemble function.
 #' @export cvek
 #'
 #' @examples
-#' # # create data
-#' # data <- as.data.frame(matrix(rnorm(700), ncol = 7,
-#' # dimnames = list(NULL, paste0("x", 1:7))))
-#' # data$y <- as.matrix(data) %*% rnorm(7)
-#' # formula <- y ~ x1 + x2 + k(x3, x4)
-#' # kern_par <- data.frame(method = c("rbf", "polynomial", "matern"),
-#' # l = c(.5, 1, 1.5), p = 1:3, stringsAsFactors = FALSE)
+#' # create data
+#' data <- as.data.frame(matrix(rnorm(700), ncol = 7,
+#' dimnames = list(NULL, paste0("x", 1:7))))
+#' data$y <- as.matrix(data) %*% rnorm(7)
+#' formula <- y ~ x1 + x2 + k(x3, x4)
+#' kern_par <- data.frame(method = c("rbf", "polynomial", "matern"),
+#' l = c(.5, 1, 1.5), p = 1:3, stringsAsFactors = FALSE)
 #'
-#' # # define kernel library
-#' # kern_func_list <- list()
-#' # for (d in 1:nrow(kern_par)) {
-#' # kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method, 
-#' # kern_par[d,]$l, kern_par[d,]$p)
-#' # }
+#' # define kernel library
+#' kern_func_list <- list()
+#' for (d in 1:nrow(kern_par)) {
+#' kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method,
+#' kern_par[d,]$l, kern_par[d,]$p)
+#' }
 #'
-#' # cvek(formula, kern_func_list = kern_func_list, data = data)
-
-cvek <- function(formula, kern_func_list, data,
+#' cvek(formula, kern_func_list = kern_func_list, data = data)
+cvek <- function(formula,
+                 kern_func_list,
+                 data,
+                 formula_test = NULL,
                  mode = "loocv",
                  strategy = "stack",
                  beta_exp = 1,
                  lambda = exp(seq(-10, 5)),
+                 test = "boot",
+                 alt_kernel_type = "linear",
+                 B = 100,
                  verbose = FALSE) {
-  # TODO (jereliu): to formally integrate with estimation() after 
-  # the newer version of estimate_ridge
+  # specify model matrices for main model
   model_matrices <- parse_cvek_formula(
     formula,
     kern_func_list = kern_func_list,
@@ -59,7 +71,8 @@ cvek <- function(formula, kern_func_list, data,
     verbose = verbose
   )
   
-  estimation(
+  # conduct estimation
+  est_res <- estimation(
     Y = model_matrices$y,
     X = model_matrices$X,
     K_list = model_matrices$K,
@@ -68,8 +81,127 @@ cvek <- function(formula, kern_func_list, data,
     beta_exp = beta_exp,
     lambda = lambda
   )
+  
+  est_res$kern_func_list <- kern_func_list
+  
+  # conduct hypothesis test if formula_test is given.
+  if (class(formula_test) == "formula") {
+    est_res$pvalue <- cvek_test(est_res,
+                                formula_test, 
+                                kern_func_list,
+                                data,
+                                test = test,
+                                alt_kernel_type = alt_kernel_type,
+                                B = B,
+                                verbose = verbose
+    )
+  }
+  
+  est_res
 }
 
+
+#' Conduct Hypothesis Testing based on CVEK estimation result.
+#'
+#' @param est_res (list) Estimation results returned by estimation() procedure.
+#' @param formula_test (formula) A user-supplied formula indicating the alternative
+#' effect to test. All terms in the alternative mode must be specified as kernel terms.
+#' @param kern_func_list (list) a list of kernel functions in the kernel library
+#' @param data (data.frame, n*d) a data.frame, list or environment (or object
+#' coercible by as.data.frame to a data.frame), containing the variables in
+#' formula. Neither a matrix nor an array will be accepted.
+#' @param test (character) Type of hypothesis test to conduct.
+#' Must be eitehr 'asymp' or 'boot'.
+#' @param alt_kernel_type (character) Type of alternative kernel effect to consider.
+#' Must be either 'linear' or 'ensemble'
+#' @param B (integer) A numeric value indicating times of resampling when test
+#' = "boot".
+#' @param verbose (logical) Whether to print additional messages.
+#'
+#' @return \item{pvalue}{(numeric) p-value of the test.}
+#' @export
+#'
+#' @examples
+#' @keywords internal
+cvek_test <- function(est_res,
+                      formula_test,
+                      kern_func_list,
+                      data,
+                      test = "boot",
+                      alt_kernel_type = "linear",
+                      B = 100,
+                      verbose = FALSE) {
+  # TODO: generalize to allow ensemble effect kernels.
+  alt_kernel_type <-
+    match.arg(alt_kernel_type, c("linear", "ensemble"))
+  
+  # define kernel functions for alternative effect
+  if (alt_kernel_type == "linear") {
+    lnr_kern_func <- generate_kernel(method = "linear")
+    alt_kern_func_list <- list(lnr_kern_func)
+  } else if (alt_kernel_type == "ensemble") {
+    alt_kern_func_list <- kern_func_list
+  }
+  
+  # parse alternative effect formula to get kernel matrices
+  test_matrices <- parse_cvek_formula(
+    formula_test,
+    kern_func_list = alt_kern_func_list,
+    data = data,
+    verbose = verbose
+  )
+  
+  # check if alternative effect contain linear terms
+  linear_terms <-
+    setdiff(colnames(test_matrices$X), "(Intercept)")
+  if (length(linear_terms) > 0) {
+    stop(
+      gettextf(
+        "'formula_test' should contain only kernel terms. Linear terms found: %s",
+        paste0(linear_terms, collapse = ", ")
+      )
+    )
+  }
+  
+  # compute alternative kernel effect
+  if (alt_kernel_type == "linear") {
+    K_std_list <-
+      lapply(test_matrices$K[[1]], function(K)
+        K / tr(K))
+    K_int <- Reduce("+", K_std_list)
+  } else {
+    #TODO(dorabee): fill in definition for ensemble kernel.
+    stop("Currently only linear alternative kernel is supported.")
+  }
+  
+  # estimate variance component parameters
+  y_fixed <- model_matrices$X %*% est_res$beta
+  sigma2_hat <- estimate_sigma2(
+    Y = model_matrices$y,
+    X = model_matrices$X,
+    lambda_hat = est_res$lambda,
+    y_fixed_hat = y_fixed,
+    alpha_hat = est_res$alpha,
+    K_hat = est_res$K
+  )
+  tau_hat <- sigma2_hat / est_res$lambda
+  
+  # compute p-value
+  func_name <- paste0("test_", test)
+  
+  do.call(
+    func_name, list(Y = model_matrices$y,
+                    X = model_matrices$X,
+                    K_int = K_int,
+                    y_fixed = y_fixed,
+                    alpha0 = est_res$alpha,
+                    K_ens = est_res$K,
+                    sigma2_hat = sigma2_hat,
+                    tau_hat = tau_hat,
+                    B = B
+    )
+  )
+}
 
 #' Parses user-supplied formula to fixed-effect and kernel matrices.
 #'
@@ -95,7 +227,7 @@ cvek <- function(formula, kern_func_list, data,
 #' Additionally, user can specify interaction between kernel terms (using either '*' and ':'),
 #' and exclude interaction term by including -1 on the rhs of formula.
 #'
-#'
+#' @author Jeremiah Zhe Liu
 #' @export parse_cvek_formula
 #'
 #' @examples
@@ -111,12 +243,12 @@ cvek <- function(formula, kern_func_list, data,
 #' # define kernel library
 #' kern_func_list <- list()
 #' for (d in 1:nrow(kern_par)) {
-#' kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method, 
+#' kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method,
 #' kern_par[d,]$l, kern_par[d,]$d)
 #' }
 #'
 #' parse_cvek_formula(formula, kern_func_list = kern_func_list, data = data)
-#' 
+#'
 parse_cvek_formula <-
   function(formula, kern_func_list, data, verbose = FALSE) {
     # extract dependent variables and terms
@@ -138,10 +270,11 @@ parse_cvek_formula <-
     kern_var_idx <- attr(tf, "specials")$k
     kern_term_idx <- NULL
     fixd_term_idx <- NULL
-
+    
     if (length(kern_var_idx) > 0) {
       # if fomula contain kernel terms, identify their location
-      kern_term_idx <- which(colSums(var_table[kern_var_idx,, drop=FALSE]) > 0)
+      kern_term_idx <-
+        which(colSums(var_table[kern_var_idx, , drop = FALSE]) > 0)
       fixd_term_idx <- setdiff(1:num_terms, kern_term_idx)
       if (length(fixd_term_idx) == 0) {
         # set fixd_term_idx back to NULL if it is an empty set
@@ -161,8 +294,9 @@ parse_cvek_formula <-
     }
     
     if (!is.null(fixd_term_idx)) {
-      fixed_effect_formula <- paste("~", paste(term_names[fixd_term_idx], collapse = " + "))
-      if (intercept == 0) 
+      fixed_effect_formula <-
+        paste("~", paste(term_names[fixd_term_idx], collapse = " + "))
+      if (intercept == 0)
         fixed_effect_formula <- paste0(fixed_effect_formula, " -1")
       
       fixed_effect_formula <- as.formula(fixed_effect_formula)
@@ -173,8 +307,9 @@ parse_cvek_formula <-
     
     # produce fixed-effect matrix X using model.frame
     fixed_effect_matrix <- NULL
-    if (!is.null(fixed_effect_formula)){
-      fixed_effect_matrix <- model.matrix(fixed_effect_formula, data = data)
+    if (!is.null(fixed_effect_formula)) {
+      fixed_effect_matrix <-
+        model.matrix(fixed_effect_formula, data = data)
     }
     
     # produce kernel-effect matrices Ks
@@ -183,7 +318,7 @@ parse_cvek_formula <-
       vector("list", length = length(kern_func_list))
     names(kernel_effect_matrix_list) <- names(kern_func_list)
     
-    if (!is.null(kern_effect_formula)){
+    if (!is.null(kern_effect_formula)) {
       if (verbose)
         print("Preparing Kernels...")
       for (kern_func_id in 1:length(kern_func_list)) {
@@ -200,8 +335,8 @@ parse_cvek_formula <-
     
     # combine and return
     # TODO (jereliu): discuss whether to add standardization
-    list(y = response_vector, 
-         X = fixed_effect_matrix, 
+    list(y = response_vector,
+         X = fixed_effect_matrix,
          K = kernel_effect_matrix_list)
   }
 
@@ -217,6 +352,7 @@ parse_cvek_formula <-
 #' @return A list of kernel matrices for each term in the formula
 #' @export parse_kernel_terms
 #'
+#' @author Jeremiah Zhe Liu
 #' @keywords internal
 parse_kernel_terms <-
   function(kern_effect_formula, kern_func, data) {
@@ -265,6 +401,7 @@ parse_kernel_terms <-
 #' @return The n*n kernel matrix corresponding to the variable being computed.
 #' @export parse_kernel_variable
 #'
+#' @author Jeremiah Zhe Liu
 #' @keywords internal
 parse_kernel_variable <- function(kern_var_name, kern_func, data) {
   # TODO (jereliu): add functionality for generating prediction kernel
