@@ -10,6 +10,11 @@ data <- as.data.frame(matrix(
 ))
 data$y <- as.matrix(data) %*% rnorm(d)
 
+data_new <- as.data.frame(matrix(
+  rexp(n * d),
+  ncol = d,
+  dimnames = list(NULL, paste0("x", 1:d))
+))
 
 test_that(desc = "parse_kernel_variable computes kernel effects",
           code = {
@@ -30,6 +35,31 @@ test_that(desc = "parse_kernel_variable computes kernel effects",
               parse_kernel_variable("x4", rbf_kern_func, data)
             fixd_effect_mat_expected <-
               compute_expected_matrix("x4", lnr_kern_func, data)
+            
+            expect_identical(kern_effect_mat_singl, kern_effect_mat_singl_expected)
+            expect_identical(kern_effect_mat_multi, kern_effect_mat_multi_expected)
+            expect_identical(fixd_effect_mat, fixd_effect_mat_expected)
+          })
+
+test_that(desc = "parse_kernel_variable computes predictive kernel",
+          code = {
+            rbf_kern_func <- generate_kernel(method = "rbf", l = 1)
+            lnr_kern_func <- generate_kernel(method = "linear")
+            
+            kern_effect_mat_singl <-
+              parse_kernel_variable("k(x1)", rbf_kern_func, data, data_new)
+            kern_effect_mat_singl_expected <-
+              compute_expected_matrix("x1", rbf_kern_func, data, data_new)
+            
+            kern_effect_mat_multi <-
+              parse_kernel_variable("k(x5,x7,x3)", rbf_kern_func, data, data_new)
+            kern_effect_mat_multi_expected <-
+              compute_expected_matrix(c("x5", "x7", "x3"), rbf_kern_func, data, data_new)
+            
+            fixd_effect_mat <-
+              parse_kernel_variable("x4", rbf_kern_func, data, data_new)
+            fixd_effect_mat_expected <-
+              compute_expected_matrix("x4", lnr_kern_func, data, data_new)
             
             expect_identical(kern_effect_mat_singl, kern_effect_mat_singl_expected)
             expect_identical(kern_effect_mat_multi, kern_effect_mat_multi_expected)

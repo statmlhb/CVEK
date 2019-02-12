@@ -17,7 +17,13 @@ setup_kernel_lib <- function(){
 }
 
 # helper function for computing kernel matrix
-compute_expected_matrix <- function(term_names, kern_func, data) {
+compute_expected_matrix <- function(term_names, kern_func, data, data_new = NULL) {
   data_mat <- as.matrix(data[, term_names, drop = FALSE])
-  kern_func(data_mat, data_mat)
+  
+  data_mat_new <- data_mat
+  if (!is.null(data_new)){
+    data_mat_new <- as.matrix(data_new[, term_names, drop = FALSE])
+  }
+  
+  kern_func(data_mat_new, data_mat)
 }

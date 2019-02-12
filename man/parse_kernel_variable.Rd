@@ -4,7 +4,7 @@
 \alias{parse_kernel_variable}
 \title{Creates kernel matrix for each variable in the formula}
 \usage{
-parse_kernel_variable(kern_var_name, kern_func, data)
+parse_kernel_variable(kern_var_name, kern_func, data, data_new = NULL)
 }
 \arguments{
 \item{kern_var_name}{(vector of characters) Names of variables in data to
@@ -18,6 +18,8 @@ kernel if the variable doesn't contain 'k()'}
 \item{data}{(data.frame, n*d) a data.frame, list or environment (or object
 coercible by as.data.frame to a data.frame), containing the variables in
 formula. Neither a matrix nor an array will be accepted.}
+
+\item{data_new}{(data.frame, n_new*d) new data for computing predictions.}
 }
 \value{
 The n*n kernel matrix corresponding to the variable being computed.
