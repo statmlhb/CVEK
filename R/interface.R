@@ -210,6 +210,7 @@ cvek_test <- function(est_res,
 #' @param data (data.frame, n*d) a data.frame, list or environment (or object
 #' coercible by as.data.frame to a data.frame), containing the variables in
 #' formula. Neither a matrix nor an array will be accepted.
+#' @param data_new (data.frame, n_new*d) new data for computing predictions.
 #' @param verbose (logical) Whether to print additional messages.
 #'
 #' @return A list of three slots:
@@ -235,6 +236,8 @@ cvek_test <- function(est_res,
 #' # create data
 #' data <- as.data.frame(matrix(rnorm(700), ncol = 7,
 #' dimnames = list(NULL, paste0("x", 1:7))))
+#' data_new <- as.data.frame(matrix(rexp(700), ncol = 7,
+#' dimnames = list(NULL, paste0("x", 1:7))))
 #' data$y <- as.matrix(data) %*% rnorm(7)
 #' formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6) + k(x7) + k(x3, x4) * k(x5, x6) * x7
 #' kern_par <- data.frame(method = c("rbf", "polynomial", "matern"),
@@ -247,10 +250,11 @@ cvek_test <- function(est_res,
 #' kern_par[d,]$l, kern_par[d,]$d)
 #' }
 #'
-#' parse_cvek_formula(formula, kern_func_list = kern_func_list, data = data)
+#' parse_cvek_formula(formula, kern_func_list = kern_func_list, 
+#' data = data, data_new = data_new)
 #'
 parse_cvek_formula <-
-  function(formula, kern_func_list, data, verbose = FALSE) {
+  function(formula, kern_func_list, data, data_new = NULL, verbose = FALSE) {
     # extract dependent variables and terms
     tf <- terms.formula(formula, specials = c("k"))
     term_names <- attr(tf, "term.labels")
@@ -327,7 +331,8 @@ parse_cvek_formula <-
         
         # compute kernel terms using the kern_func, then store to list
         kernel_effect_matrix_list[[kern_func_id]] <-
-          parse_kernel_terms(kern_effect_formula, kern_func, data = data)
+          parse_kernel_terms(kern_effect_formula, kern_func, 
+                             data = data, data_new = data_new)
       }
       if (verbose)
         print("Done!")
@@ -348,14 +353,15 @@ parse_cvek_formula <-
 #' @param data (data.frame, n*d) a data.frame, list or environment (or object
 #' coercible by as.data.frame to a data.frame), containing the variables in
 #' formula. Neither a matrix nor an array will be accepted.
-#'
+#' @param data_new (data.frame, n_new*d) new data for computing predictions.
+
 #' @return A list of kernel matrices for each term in the formula
 #' @export parse_kernel_terms
 #'
 #' @author Jeremiah Zhe Liu
 #' @keywords internal
 parse_kernel_terms <-
-  function(kern_effect_formula, kern_func, data) {
+  function(kern_effect_formula, kern_func, data, data_new = NULL) {
     kern_var_table <- attr(terms(kern_effect_formula), "factors")
     kern_var_names <- rownames(kern_var_table)
     kern_term_names <- colnames(kern_var_table)
@@ -367,7 +373,8 @@ parse_kernel_terms <-
     for (var_name in kern_var_names) {
       # compute individual kernel variables for each base kernel
       kern_var_list[[var_name]] <-
-        parse_kernel_variable(var_name, kern_func = kern_func, data = data)
+        parse_kernel_variable(var_name, kern_func = kern_func, 
+                              data = data, data_new = data_new)
     }
     
     # assemble kernel terms (for interaction terms)
@@ -397,14 +404,14 @@ parse_kernel_terms <-
 #' @param data (data.frame, n*d) a data.frame, list or environment (or object
 #' coercible by as.data.frame to a data.frame), containing the variables in
 #' formula. Neither a matrix nor an array will be accepted.
+#' @param data_new (data.frame, n_new*d) new data for computing predictions.
 #'
 #' @return The n*n kernel matrix corresponding to the variable being computed.
 #' @export parse_kernel_variable
 #'
 #' @author Jeremiah Zhe Liu
 #' @keywords internal
-parse_kernel_variable <- function(kern_var_name, kern_func, data) {
-  # TODO (jereliu): add functionality for generating prediction kernel
+parse_kernel_variable <- function(kern_var_name, kern_func, data, data_new=NULL) {
   # parse kernel term
   kern_term_formula <-
     terms.formula(formula(paste("~", kern_var_name)),
@@ -423,6 +430,12 @@ parse_kernel_variable <- function(kern_var_name, kern_func, data) {
                                 paste(input_var_names, collapse = ", "))
   Z_mat <- eval(parse(text = Z_extract_command), envir = data)
   
+  Z_mat_new <- Z_mat
+  
+  if (!is.null(data_new)){
+    Z_mat_new <- eval(parse(text = Z_extract_command), envir = data_new)
+  }
+  
   # compute kernel matrix and return
-  kern_func(Z_mat, Z_mat)
+  kern_func(Z_mat_new, Z_mat)
 }
