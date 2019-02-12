@@ -4,7 +4,8 @@
 \alias{parse_cvek_formula}
 \title{Parses user-supplied formula to fixed-effect and kernel matrices.}
 \usage{
-parse_cvek_formula(formula, kern_func_list, data, verbose = FALSE)
+parse_cvek_formula(formula, kern_func_list, data, data_new = NULL,
+  verbose = FALSE)
 }
 \arguments{
 \item{formula}{(formula) A user-supplied formula.}
@@ -14,6 +15,8 @@ parse_cvek_formula(formula, kern_func_list, data, verbose = FALSE)
 \item{data}{(data.frame, n*d) a data.frame, list or environment (or object
 coercible by as.data.frame to a data.frame), containing the variables in
 formula. Neither a matrix nor an array will be accepted.}
+
+\item{data_new}{(data.frame, n_new*d) new data for computing predictions.}
 
 \item{verbose}{(logical) Whether to print additional messages.}
 }
@@ -41,6 +44,8 @@ and exclude interaction term by including -1 on the rhs of formula.
 # create data
 data <- as.data.frame(matrix(rnorm(700), ncol = 7,
 dimnames = list(NULL, paste0("x", 1:7))))
+data_new <- as.data.frame(matrix(rexp(700), ncol = 7,
+dimnames = list(NULL, paste0("x", 1:7))))
 data$y <- as.matrix(data) \%*\% rnorm(7)
 formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6) + k(x7) + k(x3, x4) * k(x5, x6) * x7
 kern_par <- data.frame(method = c("rbf", "polynomial", "matern"),
@@ -53,7 +58,8 @@ kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method,
 kern_par[d,]$l, kern_par[d,]$d)
 }
 
-parse_cvek_formula(formula, kern_func_list = kern_func_list, data = data)
+parse_cvek_formula(formula, kern_func_list = kern_func_list, 
+data = data, data_new = data_new)
 
 }
 \author{

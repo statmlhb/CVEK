@@ -4,7 +4,7 @@
 \alias{parse_kernel_terms}
 \title{Computes kernel matrix for each kernel term in the formula}
 \usage{
-parse_kernel_terms(kern_effect_formula, kern_func, data)
+parse_kernel_terms(kern_effect_formula, kern_func, data, data_new = NULL)
 }
 \arguments{
 \item{kern_effect_formula}{(character) a term in the formula}
@@ -15,6 +15,8 @@ kernel if the variable doesn't contain 'k()'}
 \item{data}{(data.frame, n*d) a data.frame, list or environment (or object
 coercible by as.data.frame to a data.frame), containing the variables in
 formula. Neither a matrix nor an array will be accepted.}
+
+\item{data_new}{(data.frame, n_new*d) new data for computing predictions.}
 }
 \value{
 A list of kernel matrices for each term in the formula
