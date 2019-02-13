@@ -83,10 +83,13 @@ cvek <- function(formula,
   )
   
   est_res$kern_func_list <- kern_func_list
+  est_res$formula <- formula
+  est_res$data <- data
   
   # conduct hypothesis test if formula_test is given.
   if (class(formula_test) == "formula") {
-    est_res$pvalue <- cvek_test(est_res,
+    est_res$pvalue <- cvek_test(model_matrices, 
+                                est_res,
                                 formula_test, 
                                 kern_func_list,
                                 data,
@@ -97,12 +100,15 @@ cvek <- function(formula,
     )
   }
   
+  class(est_res) <- "cvek"
   est_res
 }
 
 
 #' Conduct Hypothesis Testing based on CVEK estimation result.
 #'
+#' @param model_matrices (list) List of length 3 including response, fixed effect matrix 
+#' and kernel term matrices returned by parse_cvek_formula() procedure.
 #' @param est_res (list) Estimation results returned by estimation() procedure.
 #' @param formula_test (formula) A user-supplied formula indicating the alternative
 #' effect to test. All terms in the alternative mode must be specified as kernel terms.
@@ -123,7 +129,8 @@ cvek <- function(formula,
 #'
 #' @examples
 #' @keywords internal
-cvek_test <- function(est_res,
+cvek_test <- function(model_matrices,
+                      est_res,
                       formula_test,
                       kern_func_list,
                       data,
@@ -170,8 +177,15 @@ cvek_test <- function(est_res,
         K / tr(K))
     K_int <- Reduce("+", K_std_list)
   } else {
-    #TODO(dorabee): fill in definition for ensemble kernel.
-    stop("Currently only linear alternative kernel is supported.")
+    u_weight <- est_res$u_hat
+    K_int <- 0
+    for (k in seq(length(kern_func_list))) {
+      K_std_list <-
+        lapply(test_matrices$K[[k]], function(K)
+          K / tr(K))
+      K_temp <- Reduce("+", K_std_list)
+      K_int <- K_int + u_weight[k] * K_temp
+    }
   }
   
   # estimate variance component parameters

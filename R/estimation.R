@@ -346,3 +346,40 @@ ensemble_kernel_matrix <- function(A_est, eig_thres = 1e-11){
   K_hat / tr(K_hat)
 }
 
+#' Predicting New Response
+#' 
+#' Predicting new response based on given design matrix and 
+#' the estimation result.
+#' 
+#' After we obtain the estimation result, we can predict new response.
+#' 
+#' @param object (list) Estimation results returned by estimation() procedure.
+#' @param data_new (dataframe) The new set of predictors, whose name is 
+#' the same as those of formula estimation().
+#' @return \item{y_pred}{(vector of length n) Predicted new response.}
+#' @author Wenying Deng
+#' @keywords internal
+#' @export predict.cvek
+predict.cvek <- function(object, data_new) {
+  
+  new_matrices <- parse_cvek_formula(object$formula, 
+                                     kern_func_list = object$kern_func_list, 
+                                     data = object$data, 
+                                     data_new = data_new)
+  
+  X <- parse_cvek_formula(object$formula, 
+                          kern_func_list = object$kern_func_list, 
+                          data = object$data)$X
+  
+  K_new <- 0
+  for (k in seq(length(kern_func_list))) {
+    K_std_list <-
+      lapply(new_matrices$K[[k]], function(K)
+        K / tr(K))
+    K_temp <- Reduce("+", K_std_list)
+    K_new <- K_new + object$u_hat[k] * K_temp
+  }
+  y_pred <- X %*% object$beta + K_new %*% object$alpha
+  
+  y_pred
+}
