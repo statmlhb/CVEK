@@ -41,6 +41,7 @@ test_that(desc = "parse_kernel_variable computes kernel effects",
             expect_identical(fixd_effect_mat, fixd_effect_mat_expected)
           })
 
+
 test_that(desc = "parse_kernel_variable computes predictive kernel",
           code = {
             rbf_kern_func <- generate_kernel(method = "rbf", l = 1)
@@ -155,5 +156,19 @@ test_that(desc = "parse_cvek_formula with no intercept term",
              expect_equal(model_mat_list$X, 
                           model.matrix(~1, data = data))
              
+           })
+ 
+ test_that(desc = "parse_cvek_formula predict fixed effect",
+           code = {
+             formula <- y ~ x1 + x2 + x5*x7
+             formula_new <- ~ x1 + x2 + x5*x7
+             
+             kern_func_list <- setup_kernel_lib()
+             
+             model_mat_list <- parse_cvek_formula(formula, kern_func_list, 
+                                                  data, data_new)
+             expect_equal(model_mat_list$X, 
+                          model.matrix(formula_new, data = data_new))
+             expect_equal(model_mat_list$y, NULL)
            })
  
