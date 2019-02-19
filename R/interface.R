@@ -82,6 +82,7 @@ cvek <- function(formula,
     lambda = lambda
   )
   
+  est_res$model_matrices <- model_matrices
   est_res$kern_func_list <- kern_func_list
   
   # conduct hypothesis test if formula_test is given.
@@ -173,7 +174,7 @@ cvek_test <- function(est_res,
     #TODO(dorabee): fill in definition for ensemble kernel.
     stop("Currently only linear alternative kernel is supported.")
   }
-  
+  model_matrices <- est_res$model_matrices
   # estimate variance component parameters
   y_fixed <- model_matrices$X %*% est_res$beta
   sigma2_hat <- estimate_sigma2(
