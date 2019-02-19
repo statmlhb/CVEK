@@ -100,6 +100,7 @@ cvek <- function(formula,
     )
   }
   
+  class(est_res) <- "cvek"
   est_res
 }
 
