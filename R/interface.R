@@ -82,14 +82,14 @@ cvek <- function(formula,
     lambda = lambda
   )
   
+  est_res$model_matrices <- model_matrices
   est_res$kern_func_list <- kern_func_list
   est_res$formula <- formula
   est_res$data <- data
   
   # conduct hypothesis test if formula_test is given.
   if (class(formula_test) == "formula") {
-    est_res$pvalue <- cvek_test(model_matrices, 
-                                est_res,
+    est_res$pvalue <- cvek_test(est_res,
                                 formula_test, 
                                 kern_func_list,
                                 data,
@@ -107,8 +107,6 @@ cvek <- function(formula,
 
 #' Conduct Hypothesis Testing based on CVEK estimation result.
 #'
-#' @param model_matrices (list) List of length 3 including response, fixed effect matrix 
-#' and kernel term matrices returned by parse_cvek_formula() procedure.
 #' @param est_res (list) Estimation results returned by estimation() procedure.
 #' @param formula_test (formula) A user-supplied formula indicating the alternative
 #' effect to test. All terms in the alternative mode must be specified as kernel terms.
@@ -129,8 +127,7 @@ cvek <- function(formula,
 #'
 #' @examples
 #' @keywords internal
-cvek_test <- function(model_matrices,
-                      est_res,
+cvek_test <- function(est_res,
                       formula_test,
                       kern_func_list,
                       data,
@@ -187,7 +184,7 @@ cvek_test <- function(model_matrices,
       K_int <- K_int + u_weight[k] * K_temp
     }
   }
-  
+  model_matrices <- est_res$model_matrices
   # estimate variance component parameters
   y_fixed <- model_matrices$X %*% est_res$beta
   sigma2_hat <- estimate_sigma2(
