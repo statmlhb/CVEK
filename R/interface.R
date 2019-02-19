@@ -264,6 +264,11 @@ cvek_test <- function(model_matrices,
 #' kern_par[d,]$l, kern_par[d,]$d)
 #' }
 #'
+#' # produce training data 
+#' parse_cvek_formula(formula, kern_func_list = kern_func_list, 
+#' data = data, data_new = NULL)
+#' 
+#' # produce prediction data from data_new
 #' parse_cvek_formula(formula, kern_func_list = kern_func_list, 
 #' data = data, data_new = data_new)
 #'
@@ -279,7 +284,7 @@ parse_cvek_formula <-
     # extract indep variables and intercept
     intercept <- attr(tf, "intercept")
     response_vector <- NULL
-    if (attr(tf, "response") > 0) {
+    if ((attr(tf, "response") > 0) & is.null(data_new)) {
       response_name <- as.character(attr(tf, "variables")[2])
       response_vector <- data[, response_name]
     }
@@ -326,8 +331,13 @@ parse_cvek_formula <-
     # produce fixed-effect matrix X using model.frame
     fixed_effect_matrix <- NULL
     if (!is.null(fixed_effect_formula)) {
+      fixed_effect_data <- data
+      if (!is.null(data_new)){
+        fixed_effect_data <- data_new
+      }
+      
       fixed_effect_matrix <-
-        model.matrix(fixed_effect_formula, data = data)
+        model.matrix(fixed_effect_formula, data = fixed_effect_data)
     }
     
     # produce kernel-effect matrices Ks

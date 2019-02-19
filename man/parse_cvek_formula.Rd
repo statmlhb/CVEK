@@ -58,6 +58,11 @@ kern_func_list[[d]] <- generate_kernel(kern_par[d,]$method,
 kern_par[d,]$l, kern_par[d,]$d)
 }
 
+# produce training data 
+parse_cvek_formula(formula, kern_func_list = kern_func_list, 
+data = data, data_new = NULL)
+
+# produce prediction data from data_new
 parse_cvek_formula(formula, kern_func_list = kern_func_list, 
 data = data, data_new = data_new)
 
