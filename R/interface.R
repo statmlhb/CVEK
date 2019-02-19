@@ -84,6 +84,8 @@ cvek <- function(formula,
   
   est_res$model_matrices <- model_matrices
   est_res$kern_func_list <- kern_func_list
+  est_res$formula <- formula
+  est_res$data <- data
   
   # conduct hypothesis test if formula_test is given.
   if (class(formula_test) == "formula") {
@@ -98,6 +100,7 @@ cvek <- function(formula,
     )
   }
   
+  class(est_res) <- "cvek"
   est_res
 }
 
@@ -171,8 +174,15 @@ cvek_test <- function(est_res,
         K / tr(K))
     K_int <- Reduce("+", K_std_list)
   } else {
-    #TODO(dorabee): fill in definition for ensemble kernel.
-    stop("Currently only linear alternative kernel is supported.")
+    u_weight <- est_res$u_hat
+    K_int <- 0
+    for (k in seq(length(kern_func_list))) {
+      K_std_list <-
+        lapply(test_matrices$K[[k]], function(K)
+          K / tr(K))
+      K_temp <- Reduce("+", K_std_list)
+      K_int <- K_int + u_weight[k] * K_temp
+    }
   }
   model_matrices <- est_res$model_matrices
   # estimate variance component parameters
