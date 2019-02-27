@@ -199,7 +199,7 @@ test_that("implementation of pure fixed effects", {
                        mode = "GCV", strategy = "stack", 
                        beta_exp = 1, lambda = exp(seq(-10, 5)))
   
-  X <- model_matrices$X   
+  X <- model_matrices$X
   y_est <- X %*% result$beta
   
   mod0 <- lm.ridge(y ~ ., longley, lambda = exp(seq(-10, 5)))
@@ -241,38 +241,3 @@ test_that("implementation of pure random effects", {
   expect_lte(diff, .5)
 })
 
-test_that(desc = "predicting new response",
-          code = {
-            # set up data
-            kern_par <- data.frame(method = c("linear", "polynomial", "rbf"), 
-                                   l = c(.5, 1, 1.5), d = 1:3, stringsAsFactors = FALSE)
-            # define kernel library
-            kern_func_list <- list()
-            for (j in 1:nrow(kern_par)) {
-              kern_func_list[[j]] <- generate_kernel(kern_par[j,]$method, 
-                                                     kern_par[j,]$l, 
-                                                     kern_par[j,]$d)
-            }
-            n <- 50
-            d <- 6
-            formula <- y ~ x1 + x2 + k(x3, x4) + k(x5, x6)
-            data <- as.data.frame(matrix(
-              rnorm(n * d),
-              ncol = d,
-              dimnames = list(NULL, paste0("x", 1:d))
-            ))
-            data$y <- as.matrix(data) %*% rnorm(6)
-            formula_test <- y ~ k(x3, x4) * k(x5, x6)
-            
-            model_matrices <- parse_cvek_formula(formula, 
-                                                 kern_func_list = kern_func_list, 
-                                                 data = data, verbose = FALSE)
-            
-            est_res <- cvek(formula, kern_func_list, data, formula_test,
-                            mode = "loocv", strategy = "stack", beta_exp = 1,
-                            lambda = exp(seq(-10, 5)), test = "boot",
-                            alt_kernel_type = "ensemble", B = 100, verbose = FALSE)
-            y_est <- model_matrices$X %*% est_res$beta + est_res$K %*% est_res$alpha
-            y_pred <- predict(est_res, data)
-            
-          })

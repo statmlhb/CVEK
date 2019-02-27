@@ -156,6 +156,7 @@ estimate_base <- function(Y, X, K_list, mode, lambda, ...) {
   alpha_list <- list()
   lambda_list <- list()
   kern_term_list <- list()
+  A_proc_list <- list()
   n <- length(Y)
   kern_size <- length(K_list)
   error_mat <- matrix(0, nrow = n, ncol = kern_size)
@@ -176,11 +177,13 @@ estimate_base <- function(Y, X, K_list, mode, lambda, ...) {
     alpha_list[[k]] <- estimate$alpha
     kern_term_list[[k]] <- estimate$kern_term_mat
     lambda_list[[k]] <- lambda0
+    A_proc_list[[k]] <- estimate$A_list
   }
   
   list(A_hat = A_hat, P_K_hat = P_K_hat,
        beta_list = beta_list, alpha_list = alpha_list,
        kern_term_list = kern_term_list, 
+       A_proc_list = A_proc_list, 
        lambda_list = lambda_list, error_mat = error_mat)
 }
 
@@ -244,6 +247,7 @@ estimate_ridge <- function(Y, X, K, lambda,
   beta <- X_mat %*% Y
   P_K <- 0
   P_X <- X %*% X_mat
+  A_list <- NULL
   P_K0 <- NULL
   alpha_mat <- NULL
   kern_term_mat <- NULL
@@ -254,14 +258,15 @@ estimate_ridge <- function(Y, X, K, lambda,
     A <- 0
     H <- X %*% X_mat
     V_inv_list <- list()
+    A_list <- list()
     for (d in seq(length(K))) {
       K[[d]] <- K[[d]] / tr(K[[d]])
       V_inv_list[[d]] <- ginv(K[[d]] + lambda * diag(n))
       alpha_mat[, d] <- 
         V_inv_list[[d]] %*% (Y - X %*% beta)
       S_d <- K[[d]] %*% V_inv_list[[d]]
-      A_d <- (diag(n) + K[[d]] / lambda) %*% S_d
-      A <- A + A_d
+      A_list[[d]] <- (diag(n) + K[[d]] / lambda) %*% S_d
+      A <- A + A_list[[d]]
     }
     B <- ginv(diag(n) + A) %*% A
     
@@ -311,6 +316,7 @@ estimate_ridge <- function(Y, X, K, lambda,
   
   list(beta = beta, alpha = alpha_mat, 
        kern_term_mat = kern_term_mat, 
+       A_list = A_list, 
        proj_matrix = proj_matrix_list)
 }
 
@@ -344,42 +350,4 @@ ensemble_kernel_matrix <- function(A_est, eig_thres = 1e-11){
   # assemble ensemble matrix and return
   K_hat <- U_ens %*% diag(d_ens) %*% t(U_ens)
   K_hat / tr(K_hat)
-}
-
-#' Predicting New Response
-#' 
-#' Predicting new response based on given design matrix and 
-#' the estimation result.
-#' 
-#' After we obtain the estimation result, we can predict new response.
-#' 
-#' @param object (list) Estimation results returned by estimation() procedure.
-#' @param data_new (dataframe) The new set of predictors, whose name is 
-#' the same as those of formula estimation().
-#' @return \item{y_pred}{(vector of length n) Predicted new response.}
-#' @author Wenying Deng
-#' @keywords internal
-#' @export predict.cvek
-predict.cvek <- function(object, data_new) {
-  
-  new_matrices <- parse_cvek_formula(object$formula, 
-                                     kern_func_list = object$kern_func_list, 
-                                     data = object$data, 
-                                     data_new = data_new)
-  
-  X <- parse_cvek_formula(object$formula, 
-                          kern_func_list = object$kern_func_list, 
-                          data = object$data)$X
-  
-  K_new <- 0
-  for (k in seq(length(kern_func_list))) {
-    K_std_list <-
-      lapply(new_matrices$K[[k]], function(K)
-        K / tr(K))
-    K_temp <- Reduce("+", K_std_list)
-    K_new <- K_new + object$u_hat[k] * K_temp
-  }
-  y_pred <- X %*% object$beta + K_new %*% object$alpha
-  
-  y_pred
 }
