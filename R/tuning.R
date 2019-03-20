@@ -146,7 +146,7 @@ tuning_AIC <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / n
@@ -202,7 +202,7 @@ tuning_AICc <-
     CV <- sapply(lambda, function(k) {
 
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         2 * (tr(A) + 2) / (n - tr(A) - 3)
@@ -257,7 +257,7 @@ tuning_BIC <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) +
         log(n) * (tr(A) + 2) / n
@@ -313,7 +313,7 @@ tuning_GCV <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
@@ -371,7 +371,7 @@ tuning_GCVc <-
     CV <- sapply(lambda, function(k) {
       
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
       log(t(Y) %*% (diag(n) - A) %*% (diag(n) - A) %*% Y) -
@@ -433,7 +433,7 @@ tuning_gmpml <-
       log_det <- unlist(determinant(diag(n) - A_kernel_only), 
                         use.names = FALSE)[1]
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       log(t(Y) %*% (diag(n) - A) %*% Y) - 1 / (n - 1) * log_det
     })
@@ -489,7 +489,7 @@ tuning_loocv <-
     n <- length(Y)
     CV <- sapply(lambda, function(k) {
       proj_matrix <- 
-        estimate_ridge(X = X, K = K_mat, Y = Y, lambda = k)$proj_matrix      
+        estimate_ridge(Y = Y, X = X, K = K_mat, lambda = k)$proj_matrix      
       A <- proj_matrix$total
       
       sum(((diag(n) - A) %*% Y / diag(diag(n) - A)) ^ 2)
