@@ -199,7 +199,7 @@ test_that("implementation of pure fixed effects", {
                        mode = "GCV", strategy = "stack", 
                        beta_exp = 1, lambda = exp(seq(-10, 5)))
   
-  X <- model_matrices$X   
+  X <- model_matrices$X
   y_est <- X %*% result$beta
   
   mod0 <- lm.ridge(y ~ ., longley, lambda = exp(seq(-10, 5)))
@@ -240,3 +240,4 @@ test_that("implementation of pure random effects", {
   diff <- euc_dist(y_mod0, y_est)^2 / length(y_est)
   expect_lte(diff, .5)
 })
+
